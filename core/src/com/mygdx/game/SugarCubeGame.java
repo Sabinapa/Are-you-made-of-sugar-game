@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -16,6 +18,8 @@ import java.util.Iterator;
 
 public class SugarCubeGame extends ApplicationAdapter {
 	SpriteBatch batch;
+
+	private BitmapFont font;
 
 	private Texture background;
 
@@ -58,6 +62,8 @@ public class SugarCubeGame extends ApplicationAdapter {
 		waterImg = new Texture("assets/SugarGame/images/waterDrop1.png");
 		background = new Texture("assets/SugarGame/images/backgroundClouds.png");
 		iceCreamImg = new Texture("assets/SugarGame/images/iceCream.png");
+
+		font = new BitmapFont(Gdx.files.internal("assets/SugarGame/fonts/arial-32.fnt"));
 
 		sugar = new Rectangle();
 		sugar.x = (int) (Gdx.graphics.getWidth() / 2f - sugarImg.getWidth() / 2f);
@@ -109,7 +115,7 @@ public class SugarCubeGame extends ApplicationAdapter {
 			}
 			if (coin.overlaps(sugar)) {
 				iceCreamsCollected++;
-				//coinCollect.play();
+				//coinCollect.play(); ///!!
 				it.remove();
 			}
 		}
@@ -132,6 +138,22 @@ public class SugarCubeGame extends ApplicationAdapter {
 	{
 		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
+		if (health <= 0) {
+			font.setColor(Color.valueOf("#645b77"));
+			GlyphLayout layout = new GlyphLayout(font, "GAME OVER");
+			float textWidth = layout.width;
+
+			float x = (Gdx.graphics.getWidth() - textWidth) / 2;
+			float y = (Gdx.graphics.getHeight() - layout.height) / 2;
+
+			font.draw(batch,
+					"GAME OVER",
+					x, y
+			);
+			return;
+		}
+
+
 		for (Rectangle iceCream : iceCreams) {
 			batch.draw(iceCreamImg, iceCream.x, iceCream.y);
 		}
@@ -141,6 +163,18 @@ public class SugarCubeGame extends ApplicationAdapter {
 		}
 
 		batch.draw(sugarImg, sugar.x, sugar.y);
+
+		font.setColor(Color.valueOf("#9cecfc"));
+		font.draw(batch,
+				"HEALTH: " + health,
+				25f, Gdx.graphics.getHeight() - 20f
+		);
+
+		font.setColor(Color.valueOf("#be605e"));
+		font.draw(batch,
+				"SCORE: " + iceCreamsCollected,
+				25f, Gdx.graphics.getHeight() - 60f
+		);
 
 	}
 
@@ -182,6 +216,7 @@ public class SugarCubeGame extends ApplicationAdapter {
 		sugarImg.dispose();
 		waterImg.dispose();
 		iceCreamImg.dispose();
+		font.dispose();
 
 	}
 }
