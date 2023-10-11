@@ -9,7 +9,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
-		config.setTitle("Are you from the sugar?");	// window title
+		config.setTitle("Are you made of sugar?");	// window title
 		//config.width = 800;		// window width in pixels
 		//config.height = 600;	// window height in pixels
 		//config.forceExit = false;
