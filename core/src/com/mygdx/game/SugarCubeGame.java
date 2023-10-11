@@ -34,9 +34,13 @@ public class SugarCubeGame extends ApplicationAdapter {
 
 	private Texture iceCreamImg;
 
+	private Texture bulletImg;
+
 	private Rectangle sugar;
 
 	private Array<Rectangle> waterDrops;
+
+	private Array<Rectangle> bullets;
 
 	private Array<Rectangle> iceCreams;
 
@@ -47,16 +51,19 @@ public class SugarCubeGame extends ApplicationAdapter {
 
 	private int health;
 
+	private int hitObjects;
+
 	private static final float SUGAR_SPEED = 250f;
 
-	private static final float WATER_SPEED = 150f;
+	private static final float WATER_SPEED = 170f;
 
 	private static final float WATER_DAMAGE = 25f;
 
-	private static final float WATER_SPAWN_TIME = 2f;
+	private static final float WATER_SPAWN_TIME = 1f;
 
 	private static final float ICE_CREAM_SPEED = 100f;
-	private static final float ICE_CREAM_SPAWN_TIME = 4f;    // in sec
+	private static final float ICE_CREAM_SPAWN_TIME = 1f;    // in sec
+	private static final float BULLET_SPEED = 100f;
 
 	
 	@Override
@@ -67,6 +74,7 @@ public class SugarCubeGame extends ApplicationAdapter {
 		waterImg = new Texture("assets/SugarGame/images/waterDrop1.png");
 		background = new Texture("assets/SugarGame/images/backgroundClouds.png");
 		iceCreamImg = new Texture("assets/SugarGame/images/iceCream.png");
+		bulletImg = new Texture("assets/SugarGame/images/bullet.png");
 
 		waterDropVoice = Gdx.audio.newSound(Gdx.files.internal("assets/SugarGame/sounds/water_drop_1.wav"));
 		IceCreamCollect = Gdx.audio.newSound(Gdx.files.internal("assets/SugarGame/sounds/plop-effect.wav"));
@@ -86,11 +94,14 @@ public class SugarCubeGame extends ApplicationAdapter {
 		iceCreams = new Array<>();
 		iceCreamsCollected = 0;
 		spawnIceCream();
+
+		bullets = new Array<>();
+
+		hitObjects = 0;
 	}
 
 	@Override
 	public void render () {
-		ScreenUtils.clear(1, 1, 1, 1);
 
 		if (health > 0)
 		{
@@ -108,6 +119,10 @@ public class SugarCubeGame extends ApplicationAdapter {
 	private void handleInput() {
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) moveLeft(Gdx.graphics.getDeltaTime());
 		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) moveRight(Gdx.graphics.getDeltaTime());
+
+		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+			shoot();
+		}
 	}
 
 	private void update(float delta) {
@@ -128,18 +143,34 @@ public class SugarCubeGame extends ApplicationAdapter {
 			}
 		}
 
-		for (Iterator<Rectangle> it = waterDrops.iterator(); it.hasNext(); ) {
-			Rectangle hammer = it.next();
-			hammer.y -= WATER_SPEED * delta;
-			if (hammer.y + waterImg.getHeight() < 0) {
-				it.remove();
-			}
-			if (hammer.overlaps(sugar)) {
-				health -= WATER_DAMAGE;
-				waterDropVoice.play();
-				it.remove();
+		for (Iterator<Rectangle> bulletsit = bullets.iterator(); bulletsit.hasNext(); ) {
+			Rectangle bullet = bulletsit.next();
+			bullet.y += BULLET_SPEED * delta;
+
+			for (Iterator<Rectangle> it = waterDrops.iterator(); it.hasNext(); ) {
+				Rectangle water = it.next();
+				if (bullet.overlaps(water)) {
+					hitObjects++;
+					System.out.println("Hit waterDrops number: " + hitObjects);
+					it.remove();
+					bulletsit.remove();
+				}
 			}
 		}
+
+			for (Iterator<Rectangle> it = waterDrops.iterator(); it.hasNext(); ) {
+				Rectangle water = it.next();
+
+				water.y -= WATER_SPEED * delta;
+				if (water.y + waterImg.getHeight() < 0) {
+					it.remove();
+				}
+				if (water.overlaps(sugar)) {
+					health -= WATER_DAMAGE;
+					waterDropVoice.play();
+					it.remove();
+				}
+			}
 	}
 
 	private void draw()
@@ -161,6 +192,9 @@ public class SugarCubeGame extends ApplicationAdapter {
 			return;
 		}
 
+		for (Rectangle bullet : bullets) {
+			batch.draw(bulletImg, bullet.x, bullet.y);
+		}
 
 		for (Rectangle iceCream : iceCreams) {
 			batch.draw(iceCreamImg, iceCream.x, iceCream.y);
@@ -217,6 +251,15 @@ public class SugarCubeGame extends ApplicationAdapter {
 		waterDrops.add(water);
 		waterSpawnTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f;
 	}
+
+	private void shoot() {
+		Rectangle bullet = new Rectangle();
+		bullet.x = sugar.x + sugar.getWidth() / 2 - bulletImg.getWidth() / 2;
+		bullet.y = sugar.y + sugar.getHeight();
+		bullet.width = bulletImg.getWidth();
+		bullet.height = bulletImg.getHeight();
+		bullets.add(bullet);
+	}
 	
 	@Override
 	public void dispose () {
@@ -225,6 +268,7 @@ public class SugarCubeGame extends ApplicationAdapter {
 		waterImg.dispose();
 		iceCreamImg.dispose();
 		font.dispose();
+		bulletImg.dispose();
 
 	}
 }
