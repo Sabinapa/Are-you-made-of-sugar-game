@@ -22,15 +22,15 @@ public class SugarCubeGame extends ApplicationAdapter {
 
 	private BitmapFont font;
 
+	private Sound waterDropVoice;
+
+	private Sound IceCreamCollect;
+
 	private Texture background;
 
 	private Texture sugarImg;
 
 	private Texture waterImg;
-
-	private Sound waterDropVoice;
-
-	private Sound IceCreamCollect;
 
 	private Texture iceCreamImg;
 
@@ -269,6 +269,7 @@ public class SugarCubeGame extends ApplicationAdapter {
 		iceCreamImg.dispose();
 		font.dispose();
 		bulletImg.dispose();
+		IceCreamCollect.dispose();
 
 	}
 }
