@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -26,6 +27,10 @@ public class SugarCubeGame extends ApplicationAdapter {
 	private Texture sugarImg;
 
 	private Texture waterImg;
+
+	private Sound waterDropVoice;
+
+	private Sound IceCreamCollect;
 
 	private Texture iceCreamImg;
 
@@ -62,6 +67,9 @@ public class SugarCubeGame extends ApplicationAdapter {
 		waterImg = new Texture("assets/SugarGame/images/waterDrop1.png");
 		background = new Texture("assets/SugarGame/images/backgroundClouds.png");
 		iceCreamImg = new Texture("assets/SugarGame/images/iceCream.png");
+
+		waterDropVoice = Gdx.audio.newSound(Gdx.files.internal("assets/SugarGame/sounds/water_drop_1.wav"));
+		IceCreamCollect = Gdx.audio.newSound(Gdx.files.internal("assets/SugarGame/sounds/plop-effect.wav"));
 
 		font = new BitmapFont(Gdx.files.internal("assets/SugarGame/fonts/arial-32.fnt"));
 
@@ -115,7 +123,7 @@ public class SugarCubeGame extends ApplicationAdapter {
 			}
 			if (coin.overlaps(sugar)) {
 				iceCreamsCollected++;
-				//coinCollect.play(); ///!!
+				IceCreamCollect.play();
 				it.remove();
 			}
 		}
@@ -128,7 +136,7 @@ public class SugarCubeGame extends ApplicationAdapter {
 			}
 			if (hammer.overlaps(sugar)) {
 				health -= WATER_DAMAGE;
-				//piggyVoice.play();
+				waterDropVoice.play();
 				it.remove();
 			}
 		}
