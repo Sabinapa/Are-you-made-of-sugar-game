@@ -17,6 +17,8 @@ import java.util.Iterator;
 public class SugarCubeGame extends ApplicationAdapter {
 	SpriteBatch batch;
 
+	private Texture background;
+
 	private Texture sugarImg;
 
 	private Texture waterImg;
@@ -43,7 +45,8 @@ public class SugarCubeGame extends ApplicationAdapter {
 		batch = new SpriteBatch();
 
 		sugarImg = new Texture("assets/SugarGame/images/sugar-cube.png");
-		waterImg = new Texture("assets/SugarGame/images/waterDrop.png");
+		waterImg = new Texture("assets/SugarGame/images/waterDrop1.png");
+		background = new Texture("assets/SugarGame/images/backgroundClouds.png");
 
 		sugar = new Rectangle();
 		sugar.x = (int) (Gdx.graphics.getWidth() / 2f - sugarImg.getWidth() / 2f);
@@ -98,6 +101,8 @@ public class SugarCubeGame extends ApplicationAdapter {
 
 	private void draw()
 	{
+		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
 		for (Rectangle water : waterDrops) {
 			batch.draw(waterImg, water.x, water.y);
 		}
