@@ -23,9 +23,16 @@ public class SugarCubeGame extends ApplicationAdapter {
 
 	private Texture waterImg;
 
+	private Texture iceCreamImg;
+
 	private Rectangle sugar;
 
 	private Array<Rectangle> waterDrops;
+
+	private Array<Rectangle> iceCreams;
+
+	private float iceCreamSpawnTime;  // in sec
+	private int iceCreamsCollected;
 
 	private float waterSpawnTime; // in sec
 
@@ -39,6 +46,9 @@ public class SugarCubeGame extends ApplicationAdapter {
 
 	private static final float WATER_SPAWN_TIME = 2f;
 
+	private static final float ICE_CREAM_SPEED = 100f;
+	private static final float ICE_CREAM_SPAWN_TIME = 4f;    // in sec
+
 	
 	@Override
 	public void create () {
@@ -47,6 +57,7 @@ public class SugarCubeGame extends ApplicationAdapter {
 		sugarImg = new Texture("assets/SugarGame/images/sugar-cube.png");
 		waterImg = new Texture("assets/SugarGame/images/waterDrop1.png");
 		background = new Texture("assets/SugarGame/images/backgroundClouds.png");
+		iceCreamImg = new Texture("assets/SugarGame/images/iceCream.png");
 
 		sugar = new Rectangle();
 		sugar.x = (int) (Gdx.graphics.getWidth() / 2f - sugarImg.getWidth() / 2f);
@@ -57,6 +68,10 @@ public class SugarCubeGame extends ApplicationAdapter {
 		waterDrops = new Array<>();
 		health = 100;
 		spawnWater();
+
+		iceCreams = new Array<>();
+		iceCreamsCollected = 0;
+		spawnIceCream();
 	}
 
 	@Override
@@ -83,7 +98,21 @@ public class SugarCubeGame extends ApplicationAdapter {
 
 	private void update(float delta) {
 		float elapsedTime = (TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f);
+		if (elapsedTime - iceCreamSpawnTime > ICE_CREAM_SPAWN_TIME) spawnIceCream();
 		if (elapsedTime - waterSpawnTime > WATER_SPAWN_TIME) spawnWater();
+
+		for (Iterator<Rectangle> it = iceCreams.iterator(); it.hasNext(); ) {
+			Rectangle coin = it.next();
+			coin.y -= ICE_CREAM_SPEED * delta;
+			if (coin.y + iceCreamImg.getHeight() < 0) {
+				it.remove();
+			}
+			if (coin.overlaps(sugar)) {
+				iceCreamsCollected++;
+				//coinCollect.play();
+				it.remove();
+			}
+		}
 
 		for (Iterator<Rectangle> it = waterDrops.iterator(); it.hasNext(); ) {
 			Rectangle hammer = it.next();
@@ -102,6 +131,10 @@ public class SugarCubeGame extends ApplicationAdapter {
 	private void draw()
 	{
 		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+		for (Rectangle iceCream : iceCreams) {
+			batch.draw(iceCreamImg, iceCream.x, iceCream.y);
+		}
 
 		for (Rectangle water : waterDrops) {
 			batch.draw(waterImg, water.x, water.y);
@@ -123,6 +156,16 @@ public class SugarCubeGame extends ApplicationAdapter {
 			sugar.x = Gdx.graphics.getWidth() - sugarImg.getWidth();
 	}
 
+	private void spawnIceCream() {
+		Rectangle coin = new Rectangle();
+		coin.x = MathUtils.random(0f, Gdx.graphics.getWidth() - iceCreamImg.getWidth());
+		coin.y = Gdx.graphics.getHeight();
+		coin.width = iceCreamImg.getWidth();
+		coin.height = iceCreamImg.getHeight();
+		iceCreams.add(coin);
+		iceCreamSpawnTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f;    // 1 second = 1000 miliseconds
+	}
+
 	private void spawnWater() {
 		Rectangle water = new com.badlogic.gdx.math.Rectangle();
 		water.x = MathUtils.random(0f, Gdx.graphics.getWidth() - waterImg.getWidth());
@@ -138,5 +181,7 @@ public class SugarCubeGame extends ApplicationAdapter {
 		batch.dispose();
 		sugarImg.dispose();
 		waterImg.dispose();
+		iceCreamImg.dispose();
+
 	}
 }
