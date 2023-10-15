@@ -26,6 +26,8 @@ public class SugarCubeGame extends ApplicationAdapter {
 
 	private Sound IceCreamCollect;
 
+	private Sound LaserGun;
+
 	private Texture background;
 
 	private Texture sugarImg;
@@ -76,8 +78,9 @@ public class SugarCubeGame extends ApplicationAdapter {
 		iceCreamImg = new Texture("assets/SugarGame/images/iceCream.png");
 		bulletImg = new Texture("assets/SugarGame/images/bullet.png");
 
-		waterDropVoice = Gdx.audio.newSound(Gdx.files.internal("assets/SugarGame/sounds/water_drop_1.wav"));
+		waterDropVoice = Gdx.audio.newSound(Gdx.files.internal("assets/SugarGame/sounds/soothing-waterdrop.wav"));
 		IceCreamCollect = Gdx.audio.newSound(Gdx.files.internal("assets/SugarGame/sounds/plop-effect.wav"));
+		LaserGun = Gdx.audio.newSound(Gdx.files.internal("assets/SugarGame/sounds/laser-gun-81720.mp3"));
 
 		font = new BitmapFont(Gdx.files.internal("assets/SugarGame/fonts/arial-32.fnt"));
 
@@ -122,6 +125,7 @@ public class SugarCubeGame extends ApplicationAdapter {
 
 		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 			shoot();
+			LaserGun.play();
 		}
 	}
 
@@ -131,12 +135,12 @@ public class SugarCubeGame extends ApplicationAdapter {
 		if (elapsedTime - waterSpawnTime > WATER_SPAWN_TIME) spawnWater();
 
 		for (Iterator<Rectangle> it = iceCreams.iterator(); it.hasNext(); ) {
-			Rectangle coin = it.next();
-			coin.y -= ICE_CREAM_SPEED * delta;
-			if (coin.y + iceCreamImg.getHeight() < 0) {
+			Rectangle iceCream = it.next();
+			iceCream.y -= ICE_CREAM_SPEED * delta;
+			if (iceCream.y + iceCreamImg.getHeight() < 0) {
 				it.remove();
 			}
-			if (coin.overlaps(sugar)) {
+			if (iceCream.overlaps(sugar)) {
 				iceCreamsCollected++;
 				IceCreamCollect.play();
 				it.remove();
@@ -233,12 +237,12 @@ public class SugarCubeGame extends ApplicationAdapter {
 	}
 
 	private void spawnIceCream() {
-		Rectangle coin = new Rectangle();
-		coin.x = MathUtils.random(0f, Gdx.graphics.getWidth() - iceCreamImg.getWidth());
-		coin.y = Gdx.graphics.getHeight();
-		coin.width = iceCreamImg.getWidth();
-		coin.height = iceCreamImg.getHeight();
-		iceCreams.add(coin);
+		Rectangle IceCream = new Rectangle();
+		IceCream.x = MathUtils.random(0f, Gdx.graphics.getWidth() - iceCreamImg.getWidth());
+		IceCream.y = Gdx.graphics.getHeight();
+		IceCream.width = iceCreamImg.getWidth();
+		IceCream.height = iceCreamImg.getHeight();
+		iceCreams.add(IceCream);
 		iceCreamSpawnTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f;    // 1 second = 1000 miliseconds
 	}
 
@@ -270,6 +274,7 @@ public class SugarCubeGame extends ApplicationAdapter {
 		font.dispose();
 		bulletImg.dispose();
 		IceCreamCollect.dispose();
+		LaserGun.dispose();
 
 	}
 }
