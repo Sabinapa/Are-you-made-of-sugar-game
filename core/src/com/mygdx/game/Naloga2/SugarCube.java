@@ -40,6 +40,10 @@ public class SugarCube extends DynamicGameObject
         return health;
     }
 
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
     public void draw(SpriteBatch batch) {
 
         batch.draw(sugarTexture, position.x, position.y);

@@ -27,7 +27,7 @@ public class IceCream extends DynamicGameObject {
         super(texture, x, y, width, height);
         this.iceCreamTexture = texture;
         this.sugarCube = sugarCube;
-        IceCreamTexture = texture;
+        //IceCreamTexture = texture;
         this.iceCreams = new Array<>();
         bounds = new Rectangle(x, y, width, height);
     }

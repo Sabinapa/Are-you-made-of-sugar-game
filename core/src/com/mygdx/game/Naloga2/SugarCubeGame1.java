@@ -2,6 +2,7 @@ package com.mygdx.game.Naloga2;
 
 import static com.mygdx.game.Naloga2.Assets.iceCreamImg;
 import static com.mygdx.game.Naloga2.Assets.sugarImg;
+import static com.mygdx.game.Naloga2.Assets.waterImg;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -15,7 +16,9 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	SpriteBatch batch;
 
 	private SugarCube sugar;
-	private IceCream IceCream;
+	private IceCream iceCream;
+
+	private WaterDrop waterDrop;
 
 	float width, height;
 
@@ -33,14 +36,16 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		sugar = new SugarCube(sugarImg, 0, 0, sugarImg.getWidth(), sugarImg.getHeight());
 		sugar.initializeSugarPosition(sugarImg);
 
-		IceCream = new IceCream(iceCreamImg, 0, 0, iceCreamImg.getWidth(), iceCreamImg.getHeight(), sugar);
+		iceCream = new IceCream(iceCreamImg, 0, 0, iceCreamImg.getWidth(), iceCreamImg.getHeight(), sugar);
+		waterDrop = new WaterDrop(waterImg, 0, 0, waterImg.getWidth(), waterImg.getHeight(), sugar);
 
 
 	}
 
 	private void update(float delta) {
 		float elapsedTime = (TimeUtils.nanosToMillis(TimeUtils.nanoTime()));
-		IceCream.update(elapsedTime, delta);
+		iceCream.update(elapsedTime, delta);
+		waterDrop.update(elapsedTime, delta);
 
 	}
 
@@ -56,7 +61,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 		batch.begin();
 
-
 		draw();
 
 		batch.end();
@@ -67,11 +71,22 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		batch.draw(Assets.background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		sugar.draw(batch);
-		IceCream.draw(batch);
+		iceCream.draw(batch);
+		waterDrop.draw(batch);
 
 
 
 	}
+
+	@Override
+	public void dispose () {
+		Assets.dispose();
+
+	}
+
+
+
+
 
 
 }
