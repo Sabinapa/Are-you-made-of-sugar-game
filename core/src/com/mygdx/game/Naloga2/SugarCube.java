@@ -1,5 +1,7 @@
 package com.mygdx.game.Naloga2;
 
+import static com.mygdx.game.Naloga2.Assets.bulletImg;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
@@ -16,18 +18,33 @@ public class SugarCube extends DynamicGameObject
 
     private float width, height;
 
-    public SugarCube(Texture texture, float x, float y, float width, float height) {
+    private Bullet bullet;
+    private WaterDrop waterDrop;
+
+
+    public SugarCube(Texture texture, float x, float y, float width, float height, Bullet bullet) {
         super(texture, x, y, width, height);
         sugarTexture = texture;
         this.width = width;
         this.height = height;
+        this.bullet = bullet;
         health = 100;
 
         bounds = new Rectangle(x, y, width, height);
+        //bullet = new Bullet(bulletImg, 0, 0, bulletImg.getWidth(), bulletImg.getHeight(), waterDrop, this);
+
     }
 
     public Rectangle getBounds() {
         return bounds;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
     }
 
 
@@ -53,6 +70,11 @@ public class SugarCube extends DynamicGameObject
     public void handleInput() {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) moveLeft(Gdx.graphics.getDeltaTime());
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) moveRight(Gdx.graphics.getDeltaTime());
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            bullet.shoot(position.x, position.y, sugarTexture.getWidth(), sugarTexture.getHeight());
+            //LaserGun.play();
+        }
 
     }
 

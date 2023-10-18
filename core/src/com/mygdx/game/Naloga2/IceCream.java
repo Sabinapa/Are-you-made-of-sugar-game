@@ -28,7 +28,7 @@ public class IceCream extends DynamicGameObject {
         this.iceCreamTexture = texture;
         this.sugarCube = sugarCube;
         //IceCreamTexture = texture;
-        this.iceCreams = new Array<>();
+        iceCreams = new Array<>();
         bounds = new Rectangle(x, y, width, height);
     }
 
@@ -62,6 +62,7 @@ public class IceCream extends DynamicGameObject {
         iceCream.width = iceCreamTexture.getWidth();
         iceCream.height = iceCreamTexture.getHeight();
         iceCreams.add(iceCream);
+        //System.out.println(iceCreams);
         iceCreamSpawnTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f;
     }
 

@@ -21,7 +21,7 @@ public class WaterDrop extends DynamicGameObject {
 
     private float waterSpawnTime;
     private Texture waterDropTexture;
-    private Array<Rectangle> waterDrops;
+    public Array<Rectangle> waterDrops;
     private Rectangle bounds;
 
     public WaterDrop(Texture texture, float x, float y, float width, float height, SugarCube sugarCube) {
@@ -31,6 +31,10 @@ public class WaterDrop extends DynamicGameObject {
         //waterDropTexture = texture;
         this.waterDrops = new Array<>();
         bounds = new Rectangle(x, y, width, height);
+    }
+
+    public Array getWaterDrops() {
+        return waterDrops;
     }
 
     public void update(float elapsedTime, float delta) {

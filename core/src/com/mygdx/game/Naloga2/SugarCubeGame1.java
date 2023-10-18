@@ -1,5 +1,7 @@
 package com.mygdx.game.Naloga2;
 
+import static com.mygdx.game.Naloga2.Assets.bulletImg;
+import static com.mygdx.game.Naloga2.Assets.font;
 import static com.mygdx.game.Naloga2.Assets.iceCreamImg;
 import static com.mygdx.game.Naloga2.Assets.sugarImg;
 import static com.mygdx.game.Naloga2.Assets.waterImg;
@@ -7,6 +9,8 @@ import static com.mygdx.game.Naloga2.Assets.waterImg;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
@@ -17,8 +21,9 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	private SugarCube sugar;
 	private IceCream iceCream;
-
 	private WaterDrop waterDrop;
+
+	private Bullet bullet;
 
 	float width, height;
 
@@ -33,11 +38,14 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 		batch = new SpriteBatch();
 
-		sugar = new SugarCube(sugarImg, 0, 0, sugarImg.getWidth(), sugarImg.getHeight());
+		bullet = new Bullet(bulletImg, 0, 0, bulletImg.getWidth(), bulletImg.getHeight());
+
+		sugar = new SugarCube(sugarImg, 0, 0, sugarImg.getWidth(), sugarImg.getHeight(), bullet);
 		sugar.initializeSugarPosition(sugarImg);
 
 		iceCream = new IceCream(iceCreamImg, 0, 0, iceCreamImg.getWidth(), iceCreamImg.getHeight(), sugar);
 		waterDrop = new WaterDrop(waterImg, 0, 0, waterImg.getWidth(), waterImg.getHeight(), sugar);
+
 
 
 	}
@@ -46,6 +54,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		float elapsedTime = (TimeUtils.nanosToMillis(TimeUtils.nanoTime()));
 		iceCream.update(elapsedTime, delta);
 		waterDrop.update(elapsedTime, delta);
+		bullet.update(elapsedTime,delta, waterDrop);
 
 	}
 
@@ -73,6 +82,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		sugar.draw(batch);
 		iceCream.draw(batch);
 		waterDrop.draw(batch);
+		bullet.draw(batch);
 
 
 
@@ -80,6 +90,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	@Override
 	public void dispose () {
+		batch.dispose();
 		Assets.dispose();
 
 	}
