@@ -1,9 +1,11 @@
 package com.mygdx.game.Naloga2;
 
 import static com.mygdx.game.Naloga2.Assets.bulletImg;
+import static com.mygdx.game.Naloga2.Assets.font;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -59,6 +61,14 @@ public class SugarCube extends DynamicGameObject
 
     public void setHealth(int health) {
         this.health = health;
+    }
+
+    public void drawHealth(SpriteBatch batch) {
+        font.setColor(Color.valueOf("#9cecfc"));
+        font.draw(batch,
+                "HEALTH: " + getHealth(),
+                25f, Gdx.graphics.getHeight() - 20f
+        );
     }
 
     public void draw(SpriteBatch batch) {

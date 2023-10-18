@@ -79,12 +79,28 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	{
 		batch.draw(Assets.background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
+		if (sugar.getHealth() <= 0) {
+			font.setColor(Color.valueOf("#645b77"));
+			GlyphLayout layout = new GlyphLayout(font, "GAME OVER");
+			float textWidth = layout.width;
+
+			float x = (Gdx.graphics.getWidth() - textWidth) / 2;
+			float y = (Gdx.graphics.getHeight() - layout.height) / 2;
+
+			font.draw(batch,
+					"GAME OVER",
+					x, y
+			);
+			return;
+		}
+
 		sugar.draw(batch);
 		iceCream.draw(batch);
 		waterDrop.draw(batch);
 		bullet.draw(batch);
 
-
+		sugar.drawHealth(batch);
+		iceCream.drawIceCreamsCollected(batch);
 
 	}
 

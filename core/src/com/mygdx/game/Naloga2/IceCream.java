@@ -1,6 +1,9 @@
 package com.mygdx.game.Naloga2;
 
+import static com.mygdx.game.Naloga2.Assets.font;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -30,6 +33,19 @@ public class IceCream extends DynamicGameObject {
         //IceCreamTexture = texture;
         iceCreams = new Array<>();
         bounds = new Rectangle(x, y, width, height);
+    }
+
+    public int getIceCreamsCollected() {
+        return iceCreamsCollected;
+    }
+
+    public void drawIceCreamsCollected(SpriteBatch batch)
+    {
+        font.setColor(Color.valueOf("#be605e"));
+        font.draw(batch,
+                "SCORE: " + getIceCreamsCollected(),
+                25f, Gdx.graphics.getHeight() - 60f
+        );
     }
 
     public void update(float elapsedTime, float delta) {
