@@ -17,19 +17,25 @@ public class WaterDrop extends DynamicGameObject {
     private static final float WATER_SPEED = 170f;
     private static final float WATER_DAMAGE = 25f;
     private static final float WATER_SPAWN_TIME = 1f;
-    private SugarCube sugarCube;
 
     private float waterSpawnTime;
+    private SugarCube sugarCube;
+
     private Texture waterDropTexture;
     public Array<Rectangle> waterDrops;
     private Rectangle bounds;
 
+    private float widthT, heightT;
+
     public WaterDrop(Texture texture, float x, float y, float width, float height, SugarCube sugarCube) {
         super(texture, x, y, width, height);
-        this.waterDropTexture = texture;
         this.sugarCube = sugarCube;
-        //waterDropTexture = texture;
-        this.waterDrops = new Array<>();
+        widthT = width;
+        heightT = height;
+
+        waterDrops = new Array<>();
+        waterDropTexture = texture;
+
         bounds = new Rectangle(x, y, width, height);
     }
 
@@ -37,7 +43,7 @@ public class WaterDrop extends DynamicGameObject {
         return waterDrops;
     }
 
-    public void update(float elapsedTime, float delta) {
+    public void update(float delta) {
         //if (elapsedTime - waterSpawnTime > WATER_SPAWN_TIME) spawnWater();
         waterSpawnTime += delta; // Increment the spawn timer based on delta
 
@@ -50,13 +56,13 @@ public class WaterDrop extends DynamicGameObject {
             Rectangle water = it.next();
 
             water.y -= WATER_SPEED * delta;
-            if (water.y + waterImg.getHeight() < 0) {
+            if (water.y + heightT < 0) {
                 it.remove();
             }
             if (water.overlaps(sugarCube.getBounds())) {
                 sugarCube.setHealth((int) (sugarCube.getHealth() - WATER_DAMAGE));
                 System.out.println("CurrentHealth: " + sugarCube.getHealth());
-                //waterDropVoice.play();
+                Assets.waterDropVoice.play();
                 it.remove();
             }
         }
@@ -64,17 +70,17 @@ public class WaterDrop extends DynamicGameObject {
 
     private void spawnWaterDrop() {
         Rectangle water = new com.badlogic.gdx.math.Rectangle();
-        water.x = MathUtils.random(0f, Gdx.graphics.getWidth() - waterImg.getWidth());
+        water.x = MathUtils.random(0f, Gdx.graphics.getWidth() - widthT);
         water.y = Gdx.graphics.getHeight();
-        water.width = waterImg.getWidth();
-        water.height = waterImg.getHeight();
+        water.width = widthT;
+        water.height = heightT;
         waterDrops.add(water);
         waterSpawnTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f;
     }
 
     public void draw(SpriteBatch batch) {
-        for (Rectangle iceCream : waterDrops) {
-            batch.draw(waterDropTexture, iceCream.x, iceCream.y);
+        for (Rectangle waterDrop : waterDrops) {
+            batch.draw(waterDropTexture, waterDrop.x, waterDrop.y);
         }
     }
 

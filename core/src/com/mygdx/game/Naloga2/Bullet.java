@@ -9,30 +9,27 @@ import java.util.Iterator;
 
 public class Bullet extends DynamicGameObject {
 
-    private SugarCube sugarCube;
+    private int hitObjects = 0;
 
-    private WaterDrop waterDrop;
+    private static final float BULLET_SPEED = 100f;
 
     private Texture BulletTexture;
     private Array<Rectangle> bullets;
     private Rectangle bounds;
 
-    private int hitObjects = 0;
-
-    private static final float BULLET_SPEED = 100f;
+    private float widthT, heightT;
 
     public Bullet(Texture texture, float x, float y, float width, float height) {
         super(texture, x, y, width, height);
+        widthT = width;
+        heightT = height;
+
         BulletTexture = texture;
-        this.waterDrop = waterDrop;
-        this.sugarCube = sugarCube;
-        //this.waterDrop = waterDrop;
         bounds = new Rectangle(x, y, width, height);
         bullets = new Array<>();
-
     }
 
-    public void update(float elapsedTime, float delta, WaterDrop waterDrop) {
+    public void update(float delta, WaterDrop waterDrop) {
         for (Iterator<Rectangle> bulletsit = bullets.iterator(); bulletsit.hasNext(); ) {
             Rectangle bullet = bulletsit.next();
             bullet.y += BULLET_SPEED * delta;
@@ -49,13 +46,13 @@ public class Bullet extends DynamicGameObject {
         }
     }
 
-    public void shoot(float sugarX, float sugarY, float sugarWidth, float sugarHeight) {
+    public void shoot(Rectangle bounds) {
         Rectangle bullet = new Rectangle();
         System.out.println("shot");
-        bullet.x = sugarX + 10 + sugarWidth / 2 - BulletTexture.getWidth() / 2;
-        bullet.y = sugarY + sugarHeight ;
-        bullet.width = BulletTexture.getWidth();
-        bullet.height = BulletTexture.getHeight();
+        bullet.x = bounds.x + 10 + bounds.width / 2 - widthT / 2;
+        bullet.y = bounds.y + bounds.height ;
+        bullet.width = widthT;
+        bullet.height = heightT;
         bullets.add(bullet);
 
     }

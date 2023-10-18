@@ -22,7 +22,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	private SugarCube sugar;
 	private IceCream iceCream;
 	private WaterDrop waterDrop;
-
 	private Bullet bullet;
 
 	float width, height;
@@ -41,7 +40,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		bullet = new Bullet(bulletImg, 0, 0, bulletImg.getWidth(), bulletImg.getHeight());
 
 		sugar = new SugarCube(sugarImg, 0, 0, sugarImg.getWidth(), sugarImg.getHeight(), bullet);
-		sugar.initializeSugarPosition(sugarImg);
+		sugar.initializeSugarPosition();
 
 		iceCream = new IceCream(iceCreamImg, 0, 0, iceCreamImg.getWidth(), iceCreamImg.getHeight(), sugar);
 		waterDrop = new WaterDrop(waterImg, 0, 0, waterImg.getWidth(), waterImg.getHeight(), sugar);
@@ -52,9 +51,9 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	private void update(float delta) {
 		float elapsedTime = (TimeUtils.nanosToMillis(TimeUtils.nanoTime()));
-		iceCream.update(elapsedTime, delta);
-		waterDrop.update(elapsedTime, delta);
-		bullet.update(elapsedTime,delta, waterDrop);
+		iceCream.update(delta);
+		waterDrop.update(delta);
+		bullet.update(delta, waterDrop);
 
 	}
 

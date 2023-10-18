@@ -23,15 +23,19 @@ public class IceCream extends DynamicGameObject {
 
     private Texture iceCreamTexture;
     private Array<Rectangle> iceCreams;
-    private Texture IceCreamTexture;
     private Rectangle bounds;
+
+    private float widthT, heightT;
 
     public IceCream(Texture texture, float x, float y, float width, float height, SugarCube sugarCube) {
         super(texture, x, y, width, height);
-        this.iceCreamTexture = texture;
         this.sugarCube = sugarCube;
-        //IceCreamTexture = texture;
+        widthT = width;
+        heightT = height;
+        iceCreamTexture = texture;
+
         iceCreams = new Array<>();
+
         bounds = new Rectangle(x, y, width, height);
     }
 
@@ -48,7 +52,7 @@ public class IceCream extends DynamicGameObject {
         );
     }
 
-    public void update(float elapsedTime, float delta) {
+    public void update(float delta) {
         //if (elapsedTime - iceCreamSpawnTime > ICE_CREAM_SPAWN_TIME) spawnIceCream();
         iceCreamSpawnTime += delta; // Increment the spawn timer based on delta
 
@@ -60,11 +64,12 @@ public class IceCream extends DynamicGameObject {
         for (Iterator<Rectangle> it = iceCreams.iterator(); it.hasNext(); ) {
             Rectangle iceCream = it.next();
             iceCream.y -= ICE_CREAM_SPEED * delta;
-            if (iceCream.y + iceCreamTexture.getHeight() < 0) {
+            if (iceCream.y + heightT < 0) {
                 it.remove();
             }
             if (iceCream.overlaps(sugarCube.getBounds())) {
                 iceCreamsCollected++;
+                Assets.IceCreamCollect.play();
                 System.out.println("Ice cream collected: " + iceCreamsCollected);
                 it.remove();
             }
@@ -73,10 +78,10 @@ public class IceCream extends DynamicGameObject {
 
     private void spawnIceCream() {
         Rectangle iceCream = new Rectangle();
-        iceCream.x = MathUtils.random(0f, Gdx.graphics.getWidth() - iceCreamTexture.getWidth());
+        iceCream.x = MathUtils.random(0f, Gdx.graphics.getWidth() - widthT);
         iceCream.y = Gdx.graphics.getHeight();
-        iceCream.width = iceCreamTexture.getWidth();
-        iceCream.height = iceCreamTexture.getHeight();
+        iceCream.width = widthT;
+        iceCream.height = heightT;
         iceCreams.add(iceCream);
         //System.out.println(iceCreams);
         iceCreamSpawnTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f;

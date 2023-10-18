@@ -18,22 +18,19 @@ public class SugarCube extends DynamicGameObject
 
     private Rectangle bounds;
 
-    private float width, height;
-
     private Bullet bullet;
-    private WaterDrop waterDrop;
+    private float widthT, heightT;
 
 
     public SugarCube(Texture texture, float x, float y, float width, float height, Bullet bullet) {
         super(texture, x, y, width, height);
         sugarTexture = texture;
-        this.width = width;
-        this.height = height;
+        widthT = width;
+        heightT = height;
         this.bullet = bullet;
         health = 100;
 
         bounds = new Rectangle(x, y, width, height);
-        //bullet = new Bullet(bulletImg, 0, 0, bulletImg.getWidth(), bulletImg.getHeight(), waterDrop, this);
 
     }
 
@@ -42,17 +39,11 @@ public class SugarCube extends DynamicGameObject
     }
 
     public float getWidth() {
-        return width;
+        return widthT;
     }
 
     public float getHeight() {
-        return height;
-    }
-
-
-    public void initializeSugarPosition(Texture sugarImg) {
-        position.x = (int) (Gdx.graphics.getWidth() / 2f - sugarImg.getWidth() / 2f);
-        position.y = (int) 20f;
+        return heightT;
     }
 
     public int getHealth() {
@@ -61,6 +52,15 @@ public class SugarCube extends DynamicGameObject
 
     public void setHealth(int health) {
         this.health = health;
+    }
+
+    private void updateBounds() {
+        bounds.set(position.x, position.y, widthT, heightT);
+    }
+
+    public void initializeSugarPosition() {
+        position.x = (int) (Gdx.graphics.getWidth() / 2f - widthT / 2f);
+        position.y = (int) 20f;
     }
 
     public void drawHealth(SpriteBatch batch) {
@@ -82,8 +82,9 @@ public class SugarCube extends DynamicGameObject
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) moveRight(Gdx.graphics.getDeltaTime());
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            bullet.shoot(position.x, position.y, sugarTexture.getWidth(), sugarTexture.getHeight());
-            //LaserGun.play();
+            //bullet.shoot(position.x, position.y, widthT, heightT);
+            bullet.shoot(bounds);
+            Assets.LaserGun.play();
         }
 
     }
@@ -97,14 +98,9 @@ public class SugarCube extends DynamicGameObject
 
     private void moveRight(float delta) {
         position.x += SUGAR_SPEED * delta;
-        if (position.x > Gdx.graphics.getWidth() - sugarTexture.getWidth())
-            position.x = Gdx.graphics.getWidth() - sugarTexture.getWidth();
+        if (position.x > Gdx.graphics.getWidth() - widthT)
+            position.x = Gdx.graphics.getWidth() - widthT;
         updateBounds();
-    }
-
-
-    private void updateBounds() {
-        bounds.set(position.x, position.y, width, height);
     }
 
 
