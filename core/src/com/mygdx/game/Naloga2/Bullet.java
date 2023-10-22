@@ -8,15 +8,12 @@ import com.badlogic.gdx.utils.Array;
 import java.util.Iterator;
 
 public class Bullet extends DynamicGameObject {
-
     private int hitObjects = 0;
-
     private static final float BULLET_SPEED = 100f;
 
     private Texture BulletTexture;
     private Array<Rectangle> bullets;
     private Rectangle bounds;
-
     private float widthT, heightT;
 
     public Bullet(Texture texture, float x, float y, float width, float height) {

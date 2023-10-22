@@ -10,9 +10,6 @@ public class DesktopLauncherNaloga2 {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
 		config.setTitle("Are you made of sugar?");	// window title
-		//config.width = 800;		// window width in pixels
-		//config.height = 600;	// window height in pixels
-		//config.forceExit = false;
 
 		new Lwjgl3Application(new SugarCubeGame1(), config);
 	}

@@ -34,7 +34,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		width = Gdx.graphics.getWidth();
 		height = Gdx.graphics.getHeight();
 
-
 		batch = new SpriteBatch();
 
 		bullet = new Bullet(bulletImg, 0, 0, bulletImg.getWidth(), bulletImg.getHeight());
@@ -45,18 +44,15 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		iceCream = new IceCream(iceCreamImg, 0, 0, iceCreamImg.getWidth(), iceCreamImg.getHeight(), sugar);
 		waterDrop = new WaterDrop(waterImg, 0, 0, waterImg.getWidth(), waterImg.getHeight(), sugar);
 
-
-
 	}
 
 	private void update(float delta) {
-		float elapsedTime = (TimeUtils.nanosToMillis(TimeUtils.nanoTime()));
+		//float elapsedTime = (TimeUtils.nanosToMillis(TimeUtils.nanoTime()));
 		iceCream.update(delta);
 		waterDrop.update(delta);
 		bullet.update(delta, waterDrop);
 
 	}
-
 
 	@Override
 	public void render ()
@@ -109,10 +105,5 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		Assets.dispose();
 
 	}
-
-
-
-
-
 
 }
