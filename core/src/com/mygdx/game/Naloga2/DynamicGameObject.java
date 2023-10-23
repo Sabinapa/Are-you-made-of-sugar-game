@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-public class DynamicGameObject extends GameObject
+public abstract class DynamicGameObject extends GameObject
 {
     public final Vector2 velocity;
     public final Vector2 accel;
@@ -15,9 +15,4 @@ public class DynamicGameObject extends GameObject
         accel = new Vector2();
     }
 
-    @Override
-    public void draw(SpriteBatch batch)
-    {
-
-    }
 }
