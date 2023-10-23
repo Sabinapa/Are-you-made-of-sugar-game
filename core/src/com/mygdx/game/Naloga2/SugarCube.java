@@ -71,6 +71,7 @@ public class SugarCube extends DynamicGameObject
         );
     }
 
+    @Override
     public void draw(SpriteBatch batch) {
 
         batch.draw(sugarTexture, position.x, position.y);

@@ -54,6 +54,7 @@ public class Bullet extends DynamicGameObject {
 
     }
 
+    @Override
     public void draw(SpriteBatch batch)
     {
         for (Rectangle bullet : bullets) {

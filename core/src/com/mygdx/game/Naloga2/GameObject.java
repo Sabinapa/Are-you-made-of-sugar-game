@@ -14,4 +14,6 @@ public abstract class GameObject {
         this.position = new Vector2(x, y);
         this.bounds = new Rectangle((int) (x - width / 2), (int) (y - height / 2), (int) width, (int) height);
     }
+
+    public abstract void draw(SpriteBatch batch);
 }

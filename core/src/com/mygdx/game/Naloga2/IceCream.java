@@ -87,6 +87,7 @@ public class IceCream extends DynamicGameObject {
         iceCreamSpawnTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f;
     }
 
+    @Override
     public void draw(SpriteBatch batch) {
         for (Rectangle iceCream : iceCreams) {
             batch.draw(iceCreamTexture, iceCream.x, iceCream.y);

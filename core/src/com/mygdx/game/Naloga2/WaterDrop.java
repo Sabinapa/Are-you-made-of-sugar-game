@@ -78,6 +78,7 @@ public class WaterDrop extends DynamicGameObject {
         waterSpawnTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f;
     }
 
+    @Override
     public void draw(SpriteBatch batch) {
         for (Rectangle waterDrop : waterDrops) {
             batch.draw(waterDropTexture, waterDrop.x, waterDrop.y);
