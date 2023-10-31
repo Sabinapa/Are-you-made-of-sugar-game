@@ -39,6 +39,7 @@ public class Assets {
         bulletImg.dispose();
         IceCreamCollect.dispose();
         LaserGun.dispose();
+        background.dispose();
 
     }
 }

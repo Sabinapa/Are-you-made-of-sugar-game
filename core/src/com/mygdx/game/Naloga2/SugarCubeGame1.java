@@ -21,11 +21,13 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	private SugarCube sugar;
 	private IceCream iceCream;
+
+	private Array<Rectangle> iceCreams;
+
 	private WaterDrop waterDrop;
 	private Bullet bullet;
 
 	float width, height;
-
 
 	@Override
 	public void create () {
@@ -41,7 +43,9 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		sugar = new SugarCube(sugarImg, 0, 0, sugarImg.getWidth(), sugarImg.getHeight(), bullet);
 		sugar.initializeSugarPosition();
 
-		iceCream = new IceCream(iceCreamImg, 0, 0, iceCreamImg.getWidth(), iceCreamImg.getHeight(), sugar);
+		iceCreams = new Array<>();
+		iceCream = new IceCream(iceCreamImg, 0, 0, iceCreamImg.getWidth(), iceCreamImg.getHeight(), sugar, iceCreams);
+
 		waterDrop = new WaterDrop(waterImg, 0, 0, waterImg.getWidth(), waterImg.getHeight(), sugar);
 
 	}

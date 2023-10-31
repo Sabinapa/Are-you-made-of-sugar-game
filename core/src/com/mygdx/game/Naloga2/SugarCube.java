@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class SugarCube extends DynamicGameObject
 {
-    private static final float SUGAR_SPEED = 250f;
+    private static final float SPEED = 250f;
     private int health;
     private Texture sugarTexture;
 
@@ -91,14 +91,14 @@ public class SugarCube extends DynamicGameObject
     }
 
     private void moveLeft(float delta) {
-        position.x -= SUGAR_SPEED * delta;
+        position.x -= SPEED * delta;
         if (position.x < 0)
             position.x = (int) 0f;
         updateBounds();
     }
 
     private void moveRight(float delta) {
-        position.x += SUGAR_SPEED * delta;
+        position.x += SPEED * delta;
         if (position.x > Gdx.graphics.getWidth() - widthT)
             position.x = Gdx.graphics.getWidth() - widthT;
         updateBounds();

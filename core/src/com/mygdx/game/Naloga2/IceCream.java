@@ -14,27 +14,27 @@ import com.badlogic.gdx.utils.TimeUtils;
 import java.util.Iterator;
 
 public class IceCream extends DynamicGameObject {
-    private static final float ICE_CREAM_SPEED = 100f;
-    private static final float ICE_CREAM_SPAWN_TIME = 1f;
+    private static final float SPEED = 100f;
+    private static final float SPAWN_TIME = 1f;
     private float iceCreamSpawnTime;
     private int iceCreamsCollected = 0;
 
     private SugarCube sugarCube;
 
     private Texture iceCreamTexture;
+
     private Array<Rectangle> iceCreams;
     private Rectangle bounds;
 
     private float widthT, heightT;
 
-    public IceCream(Texture texture, float x, float y, float width, float height, SugarCube sugarCube) {
+    public IceCream(Texture texture, float x, float y, float width, float height, SugarCube sugarCube, Array<Rectangle> iceCreams) {
         super(texture, x, y, width, height);
         this.sugarCube = sugarCube;
         widthT = width;
         heightT = height;
         iceCreamTexture = texture;
-
-        iceCreams = new Array<>();
+        this.iceCreams = iceCreams;
 
         bounds = new Rectangle(x, y, width, height);
     }
@@ -56,14 +56,14 @@ public class IceCream extends DynamicGameObject {
         //if (elapsedTime - iceCreamSpawnTime > ICE_CREAM_SPAWN_TIME) spawnIceCream();
         iceCreamSpawnTime += delta; // Increment the spawn timer based on delta
 
-        if (iceCreamSpawnTime > ICE_CREAM_SPAWN_TIME) {
+        if (iceCreamSpawnTime > SPAWN_TIME) {
             spawnIceCream();
             iceCreamSpawnTime = 0; // Reset the spawn timer
         }
 
         for (Iterator<Rectangle> it = iceCreams.iterator(); it.hasNext(); ) {
             Rectangle iceCream = it.next();
-            iceCream.y -= ICE_CREAM_SPEED * delta;
+            iceCream.y -= SPEED * delta;
             if (iceCream.y + heightT < 0) {
                 it.remove();
             }

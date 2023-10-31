@@ -9,11 +9,10 @@ import java.util.Iterator;
 
 public class Bullet extends DynamicGameObject {
     private int hitObjects = 0;
-    private static final float BULLET_SPEED = 100f;
+    private static final float SPEED = 100f;
 
     private Texture BulletTexture;
     private Array<Rectangle> bullets;
-    private Rectangle bounds;
     private float widthT, heightT;
 
     public Bullet(Texture texture, float x, float y, float width, float height) {
@@ -22,14 +21,13 @@ public class Bullet extends DynamicGameObject {
         heightT = height;
 
         BulletTexture = texture;
-        bounds = new Rectangle(x, y, width, height);
         bullets = new Array<>();
     }
 
     public void update(float delta, WaterDrop waterDrop) {
         for (Iterator<Rectangle> bulletsit = bullets.iterator(); bulletsit.hasNext(); ) {
             Rectangle bullet = bulletsit.next();
-            bullet.y += BULLET_SPEED * delta;
+            bullet.y += SPEED * delta;
 
             for (Iterator<Rectangle> it = waterDrop.getWaterDrops().iterator(); it.hasNext(); ) {
                 Rectangle water = it.next();

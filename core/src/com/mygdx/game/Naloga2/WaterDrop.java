@@ -1,7 +1,5 @@
 package com.mygdx.game.Naloga2;
 
-import static com.mygdx.game.Naloga2.Assets.waterImg;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,9 +12,9 @@ import java.util.Iterator;
 
 public class WaterDrop extends DynamicGameObject {
 
-    private static final float WATER_SPEED = 170f;
-    private static final float WATER_DAMAGE = 25f;
-    private static final float WATER_SPAWN_TIME = 1f;
+    private static final float SPEED = 170f;
+    private static final float DAMAGE = 25f;
+    private static final float SPAWN_TIME = 1f;
 
     private float waterSpawnTime;
     private SugarCube sugarCube;
@@ -47,7 +45,7 @@ public class WaterDrop extends DynamicGameObject {
         //if (elapsedTime - waterSpawnTime > WATER_SPAWN_TIME) spawnWater();
         waterSpawnTime += delta; // Increment the spawn timer based on delta
 
-        if (waterSpawnTime > WATER_SPAWN_TIME) {
+        if (waterSpawnTime > SPAWN_TIME) {
             spawnWaterDrop();
             waterSpawnTime = 0; // Reset the spawn timer
         }
@@ -55,12 +53,12 @@ public class WaterDrop extends DynamicGameObject {
         for (Iterator<Rectangle> it = waterDrops.iterator(); it.hasNext(); ) {
             Rectangle water = it.next();
 
-            water.y -= WATER_SPEED * delta;
+            water.y -= SPEED * delta;
             if (water.y + heightT < 0) {
                 it.remove();
             }
             if (water.overlaps(sugarCube.getBounds())) {
-                sugarCube.setHealth((int) (sugarCube.getHealth() - WATER_DAMAGE));
+                sugarCube.setHealth((int) (sugarCube.getHealth() - DAMAGE));
                 System.out.println("CurrentHealth: " + sugarCube.getHealth());
                 Assets.waterDropVoice.play();
                 it.remove();
