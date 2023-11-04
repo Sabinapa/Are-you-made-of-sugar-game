@@ -25,7 +25,11 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	private Array<Rectangle> iceCreams;
 
 	private WaterDrop waterDrop;
+
+	private Array<Rectangle> waterDrops;
 	private Bullet bullet;
+
+	private Array<Rectangle> bullets;
 
 	float width, height;
 
@@ -38,7 +42,8 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 		batch = new SpriteBatch();
 
-		bullet = new Bullet(bulletImg, 0, 0, bulletImg.getWidth(), bulletImg.getHeight());
+		bullets = new Array<>();
+		bullet = new Bullet(bulletImg, 0, 0, bulletImg.getWidth(), bulletImg.getHeight(), bullets);
 
 		sugar = new SugarCube(sugarImg, 0, 0, sugarImg.getWidth(), sugarImg.getHeight(), bullet);
 		sugar.initializeSugarPosition();
@@ -46,7 +51,8 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		iceCreams = new Array<>();
 		iceCream = new IceCream(iceCreamImg, 0, 0, iceCreamImg.getWidth(), iceCreamImg.getHeight(), sugar, iceCreams);
 
-		waterDrop = new WaterDrop(waterImg, 0, 0, waterImg.getWidth(), waterImg.getHeight(), sugar);
+		waterDrops = new Array<>();
+		waterDrop = new WaterDrop(waterImg, 0, 0, waterImg.getWidth(), waterImg.getHeight(), sugar, waterDrops);
 
 	}
 

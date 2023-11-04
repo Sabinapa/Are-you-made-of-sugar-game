@@ -15,13 +15,13 @@ public class Bullet extends DynamicGameObject {
     private Array<Rectangle> bullets;
     private float widthT, heightT;
 
-    public Bullet(Texture texture, float x, float y, float width, float height) {
+    public Bullet(Texture texture, float x, float y, float width, float height, Array<Rectangle> bullets) {
         super(texture, x, y, width, height);
         widthT = width;
         heightT = height;
+        this.bullets = bullets;
 
         BulletTexture = texture;
-        bullets = new Array<>();
     }
 
     public void update(float delta, WaterDrop waterDrop) {

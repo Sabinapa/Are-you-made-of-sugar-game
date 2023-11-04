@@ -19,11 +19,11 @@ public class IceCream extends DynamicGameObject {
     private float iceCreamSpawnTime;
     private int iceCreamsCollected = 0;
 
+    private Array<Rectangle> iceCreams;
     private SugarCube sugarCube;
 
     private Texture iceCreamTexture;
 
-    private Array<Rectangle> iceCreams;
     private Rectangle bounds;
 
     private float widthT, heightT;
@@ -31,13 +31,14 @@ public class IceCream extends DynamicGameObject {
     public IceCream(Texture texture, float x, float y, float width, float height, SugarCube sugarCube, Array<Rectangle> iceCreams) {
         super(texture, x, y, width, height);
         this.sugarCube = sugarCube;
+        this.iceCreams = iceCreams;
         widthT = width;
         heightT = height;
         iceCreamTexture = texture;
-        this.iceCreams = iceCreams;
-
         bounds = new Rectangle(x, y, width, height);
     }
+
+
 
     public int getIceCreamsCollected() {
         return iceCreamsCollected;

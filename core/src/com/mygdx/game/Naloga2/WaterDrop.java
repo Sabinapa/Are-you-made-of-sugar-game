@@ -25,13 +25,12 @@ public class WaterDrop extends DynamicGameObject {
 
     private float widthT, heightT;
 
-    public WaterDrop(Texture texture, float x, float y, float width, float height, SugarCube sugarCube) {
+    public WaterDrop(Texture texture, float x, float y, float width, float height, SugarCube sugarCube, Array<Rectangle> waterDrops) {
         super(texture, x, y, width, height);
         this.sugarCube = sugarCube;
         widthT = width;
         heightT = height;
-
-        waterDrops = new Array<>();
+        this.waterDrops = waterDrops;
         waterDropTexture = texture;
 
         bounds = new Rectangle(x, y, width, height);
