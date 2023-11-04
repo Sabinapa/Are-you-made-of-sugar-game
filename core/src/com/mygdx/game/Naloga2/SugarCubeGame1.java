@@ -1,5 +1,6 @@
 package com.mygdx.game.Naloga2;
 
+import static com.mygdx.game.Naloga2.Assets.bonusImg;
 import static com.mygdx.game.Naloga2.Assets.bulletImg;
 import static com.mygdx.game.Naloga2.Assets.font;
 import static com.mygdx.game.Naloga2.Assets.iceCreamImg;
@@ -31,6 +32,10 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	private Array<Rectangle> bullets;
 
+	private Bonus bonus;
+
+	private Array<Rectangle> bonuses;
+
 	float width, height;
 
 	private boolean isPaused = false; // Spremenljivka za sledenje stanja pavze
@@ -61,6 +66,11 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		waterDrops = new Array<>();
 		waterDrop = new WaterDrop(waterImg, 0, 0, waterImg.getWidth(), waterImg.getHeight(), sugar, waterDrops);
 
+		bonuses = new Array<>();
+		bonus = new Bonus(bonusImg, 0, 0, bonusImg.getWidth(), bonusImg.getHeight(), sugar, bonuses);
+
+
+
 	}
 
 	private void update(float delta) {
@@ -68,6 +78,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		iceCream.update(delta);
 		waterDrop.update(delta);
 		bullet.update(delta, waterDrop);
+		bonus.update(delta);
 
 	}
 
@@ -121,8 +132,10 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		sugar.initializeSugarPosition();
 		sugar.setHealth(100);
 		iceCream.setIceCreamsCollected(0);
+		bonus.setBonusCollected(0);
 		iceCreams.clear();
 		waterDrops.clear();
+		bonuses.clear();
 		bullets.clear();
 	}
 
@@ -153,9 +166,11 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		iceCream.draw(batch);
 		waterDrop.draw(batch);
 		bullet.draw(batch);
+		bonus.draw(batch);
 
 		sugar.drawHealth(batch);
 		iceCream.drawIceCreamsCollected(batch);
+		bonus.drawBonusCollected(batch);
 
 	}
 

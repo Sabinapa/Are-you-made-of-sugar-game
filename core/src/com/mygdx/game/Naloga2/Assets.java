@@ -16,12 +16,15 @@ public class Assets {
     public static Texture iceCreamImg;
     public static Texture bulletImg;
 
+    public static Texture bonusImg;
+
     public static void load() {
         sugarImg = new Texture("assets/SugarGame/images/sugar-cube.png");
         waterImg = new Texture("assets/SugarGame/images/waterDrop1.png");
         background = new Texture("assets/SugarGame/images/backgroundClouds.png");
         iceCreamImg = new Texture("assets/SugarGame/images/iceCream.png");
         bulletImg = new Texture("assets/SugarGame/images/bullet.png");
+        bonusImg = new Texture("assets/SugarGame/images/bonus1.png");
 
         waterDropVoice = Gdx.audio.newSound(Gdx.files.internal("assets/SugarGame/sounds/soothing-waterdrop.wav"));
         IceCreamCollect = Gdx.audio.newSound(Gdx.files.internal("assets/SugarGame/sounds/plop-effect.wav"));
@@ -40,6 +43,7 @@ public class Assets {
         IceCreamCollect.dispose();
         LaserGun.dispose();
         background.dispose();
+        bonusImg.dispose();
 
     }
 }
