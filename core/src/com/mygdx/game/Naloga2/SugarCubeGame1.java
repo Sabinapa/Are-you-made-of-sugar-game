@@ -34,6 +34,11 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	float width, height;
 
 	private boolean isPaused = false; // Spremenljivka za sledenje stanja pavze
+	private boolean isGameOver = false; // Spremenljivka za sledenje stanja konca igre
+
+	private long gameOverStartTime = 0; // Časovnik za sledenje začetnega časa izpisa "GAME OVER"
+	private long gameOverDuration = 5000; // Čas, koliko časa bo sporočilo "GAME OVER" prikazano (v milisekundah)
+
 
 	@Override
 	public void create () {
@@ -75,6 +80,11 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			update(Gdx.graphics.getDeltaTime());
 		}
 
+		if (sugar.getHealth() <= 0 && !isGameOver) {
+			isGameOver = true; // Nastavite, da je igra končana
+			gameOverStartTime = TimeUtils.millis(); // Posodobite časovnik za začetni čas izpisa
+		}
+
 		if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
 			isPaused = !isPaused; // Preklopi med pavzo in nadaljevanjem igre ob pritisku na tipko P
 		}
@@ -103,23 +113,40 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		batch.end();
 	}
 
+	private void resetGame()
+	{
+		// Po preteku časa izpisa "GAME OVER" nadaljujte z igro
+		isGameOver = false;
+		// Ponastavite vse spremenljivke in postavke igre
+		sugar.initializeSugarPosition();
+		sugar.setHealth(100);
+		iceCream.setIceCreamsCollected(0);
+		iceCreams.clear();
+		waterDrops.clear();
+		bullets.clear();
+	}
+
 	private void draw()
 	{
 		batch.draw(Assets.background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		if (sugar.getHealth() <= 0) {
-			font.setColor(Color.valueOf("#645b77"));
-			GlyphLayout layout = new GlyphLayout(font, "GAME OVER");
-			float textWidth = layout.width;
+		if (isGameOver)
+		{
+			long currentTime = TimeUtils.millis(); // Trenuten čas
 
-			float x = (Gdx.graphics.getWidth() - textWidth) / 2;
-			float y = (Gdx.graphics.getHeight() - layout.height) / 2;
+			if (currentTime - gameOverStartTime <= gameOverDuration) {
+				// Igra je končana in sporočilo "GAME OVER" se še vedno izpisuje
+				font.setColor(Color.valueOf("#645b77"));
+				GlyphLayout layout = new GlyphLayout(font, "GAME OVER");
+				float textWidth = layout.width;
 
-			font.draw(batch,
-					"GAME OVER",
-					x, y
-			);
-			return;
+				float x = (Gdx.graphics.getWidth() - textWidth) / 2;
+				float y = (Gdx.graphics.getHeight() - layout.height) / 2;
+
+				font.draw(batch, "GAME OVER", x, y);
+			} else {
+				resetGame();
+			}
 		}
 
 		sugar.draw(batch);

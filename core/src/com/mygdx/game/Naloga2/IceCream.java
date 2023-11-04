@@ -44,6 +44,10 @@ public class IceCream extends DynamicGameObject {
         return iceCreamsCollected;
     }
 
+    public int setIceCreamsCollected(int iceCreamsCollected) {
+        return this.iceCreamsCollected = iceCreamsCollected;
+    }
+
     public void drawIceCreamsCollected(SpriteBatch batch)
     {
         font.setColor(Color.valueOf("#be605e"));
