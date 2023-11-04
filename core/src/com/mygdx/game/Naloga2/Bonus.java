@@ -75,9 +75,11 @@ public class Bonus extends DynamicGameObject
             }
             if (iceCream.overlaps(sugarCube.getBounds())) {
                 BonusCollected++;
-                sugarCube.setHealth(sugarCube.getHealth() + 10);
+                //sugarCube.setHealth(sugarCube.getHealth() + 10);
                 Assets.IceCreamCollect.play();
                 System.out.println("Bonus collected: " + BonusCollected);
+                sugarCube.isInvulnerable = true;
+                sugarCube.invulnerabilityStartTime = TimeUtils.millis();
                 it.remove();
             }
         }

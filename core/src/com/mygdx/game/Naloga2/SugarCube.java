@@ -9,10 +9,16 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class SugarCube extends DynamicGameObject
 {
     private static final float SPEED = 250f;
+
+    public boolean isInvulnerable = false;
+    public long invulnerabilityDuration = 5000; // 5 sekund v milisekundah
+    public long invulnerabilityStartTime = 0; // Čas začetka neobčutljivosti
+
     private int health;
     private Texture sugarTexture;
 
@@ -75,6 +81,16 @@ public class SugarCube extends DynamicGameObject
     public void draw(SpriteBatch batch) {
 
         batch.draw(sugarTexture, position.x, position.y);
+
+    }
+
+    public void update(float delta) {
+        if (isInvulnerable) {
+            long currentTime = TimeUtils.millis();
+            if (currentTime - invulnerabilityStartTime >= invulnerabilityDuration) {
+                isInvulnerable = false;
+            }
+        }
 
     }
 

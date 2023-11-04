@@ -57,9 +57,11 @@ public class WaterDrop extends DynamicGameObject {
                 it.remove();
             }
             if (water.overlaps(sugarCube.getBounds())) {
-                sugarCube.setHealth((int) (sugarCube.getHealth() - DAMAGE));
-                System.out.println("CurrentHealth: " + sugarCube.getHealth());
-                Assets.waterDropVoice.play();
+                if (!sugarCube.isInvulnerable) {
+                    sugarCube.setHealth((int) (sugarCube.getHealth() - DAMAGE));
+                    System.out.println("CurrentHealth: " + sugarCube.getHealth());
+                    Assets.waterDropVoice.play();
+                }
                 it.remove();
             }
         }

@@ -75,10 +75,12 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	private void update(float delta) {
 		//float elapsedTime = (TimeUtils.nanosToMillis(TimeUtils.nanoTime()));
+		sugar.update(delta);
 		iceCream.update(delta);
 		waterDrop.update(delta);
 		bullet.update(delta, waterDrop);
 		bonus.update(delta);
+
 
 	}
 
