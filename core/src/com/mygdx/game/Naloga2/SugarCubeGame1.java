@@ -33,6 +33,8 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	float width, height;
 
+	private boolean isPaused = false; // Spremenljivka za sledenje stanja pavze
+
 	@Override
 	public void create () {
 		Assets.load();
@@ -67,15 +69,36 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	@Override
 	public void render ()
 	{
-		if (sugar.getHealth() > 0)
+		if (!isPaused && sugar.getHealth() > 0)
 		{
 			sugar.handleInput();
 			update(Gdx.graphics.getDeltaTime());
 		}
 
+		if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+			isPaused = !isPaused; // Preklopi med pavzo in nadaljevanjem igre ob pritisku na tipko P
+		}
+
 		batch.begin();
 
-		draw();
+		if (isPaused) //Izpis paused
+		{
+			font.setColor(Color.valueOf("#645b77"));
+			GlyphLayout layout = new GlyphLayout(font, "PAUSED");
+			float textWidth = layout.width;
+
+			float x = (Gdx.graphics.getWidth() - textWidth) / 2;
+			float y = (Gdx.graphics.getHeight() - layout.height) / 2;
+
+			font.draw(batch,
+					"PAUSED",
+					x, y
+			);
+		}
+		else
+		{
+			draw();
+		}
 
 		batch.end();
 	}
