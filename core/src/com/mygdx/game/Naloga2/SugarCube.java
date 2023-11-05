@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class SugarCube extends DynamicGameObject
@@ -24,36 +26,22 @@ public class SugarCube extends DynamicGameObject
 
     private Rectangle bounds;
 
-    private Bullet bullet;
     private float widthT, heightT;
 
 
-    public SugarCube(Texture texture, float x, float y, float width, float height, Bullet bullet) {
+    public SugarCube(Texture texture, float x, float y, float width, float height) {
         super(texture, x, y, width, height);
         sugarTexture = texture;
         widthT = width;
         heightT = height;
-        this.bullet = bullet;
         health = 100;
 
         bounds = new Rectangle(x, y, width, height);
 
     }
 
-    public boolean overlaps(Rectangle other) {
-        return bounds.overlaps(other);
-    }
-
     public Rectangle getBounds() {
         return bounds;
-    }
-
-    public float getWidth() {
-        return widthT;
-    }
-
-    public float getHeight() {
-        return heightT;
     }
 
     public int getHealth() {
@@ -98,13 +86,13 @@ public class SugarCube extends DynamicGameObject
 
     }
 
-    public void handleInput() {
+    public void handleInput(Pool<Bullet> bulletPool, Array<Bullet> bullets) {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) moveLeft(Gdx.graphics.getDeltaTime());
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) moveRight(Gdx.graphics.getDeltaTime());
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             //bullet.shoot(position.x, position.y, widthT, heightT);
-            bullet.shoot(bounds);
+            Bullet.shoot(bounds, bullets, bulletPool);
             Assets.LaserGun.play();
         }
 

@@ -33,9 +33,9 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	Pool<WaterDrop> waterDropPool;
 
-	private Bullet bullet;
+	private Array<Bullet> bullets;
 
-	private Array<Rectangle> bullets;
+	Pool<Bullet> bulletPool;
 
 	private Array<Bonus> bonuses;
 
@@ -60,9 +60,15 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		batch = new SpriteBatch();
 
 		bullets = new Array<>();
-		bullet = new Bullet(bulletImg, 0, 0, bulletImg.getWidth(), bulletImg.getHeight(), bullets);
+		bulletPool = new Pool<Bullet>() {
+			@Override
+			protected Bullet newObject() {
+				return new Bullet(bulletImg);
+			}
+		};
 
-		sugar = new SugarCube(sugarImg, 0, 0, sugarImg.getWidth(), sugarImg.getHeight(), bullet);
+
+		sugar = new SugarCube(sugarImg, 0, 0, sugarImg.getWidth(), sugarImg.getHeight());
 		sugar.initializeSugarPosition();
 
 		iceCreams = new Array<>();
@@ -81,8 +87,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			}
 		};
 
-
-
 		bonuses = new Array<>();
 		bonusPool = new Pool<Bonus>() {
 			@Override
@@ -90,9 +94,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				return new Bonus(bonusImg);
 			}
 		};
-
-
-
 
 	}
 
@@ -109,7 +110,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			IceCream iceCream = it.next();
 			iceCream.update(delta);
 
-			// Preveri, ali je ledena krema dosežena spodnji rob zaslona.
 			if (iceCream.bounds.y + iceCreamImg.getHeight() < 0) {
 				it.remove();
 				// Pripeljite ledeno kremo nazaj v bazen.
@@ -117,7 +117,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				iceCream.reset();
 			}
 
-			// Preveri, ali ledena krema prekriva SugarCube.
 			if (iceCream.bounds.overlaps(sugar.getBounds())) {
 				IceCream.setIceCreamsCollected(IceCream.getIceCreamsCollected() + 1);
 				Assets.IceCreamCollect.play();
@@ -150,7 +149,31 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			}
 		}
 
-		//bullet.update(delta, waterDrop);
+		//BULLETS UPDATE
+
+		for (Iterator<Bullet> bulletsit = bullets.iterator(); bulletsit.hasNext(); ) {
+				Bullet bullet = bulletsit.next();
+				bullet.update(delta);
+
+				for (Iterator<WaterDrop> it = waterDrops.iterator(); it.hasNext(); ) {
+					WaterDrop water = it.next();
+					if (bullet.bounds.overlaps(water.bounds)) {
+						Bullet.setHitObjects(Bullet.getHitObjects() + 1);
+						System.out.println("Hit waterDrops number: " + Bullet.getHitObjects());
+						it.remove();
+						bulletsit.remove();
+					}
+				}
+
+			if (bullet.bounds.y + bulletImg.getHeight() > height) {
+				bulletsit.remove();
+				bulletPool.free(bullet);
+				bullet.reset();
+			}
+		}
+
+
+
 		//BONUS UPDATE
 		for (Iterator<Bonus> it = bonuses.iterator(); it.hasNext(); ) {
 			Bonus bonus = it.next();
@@ -180,13 +203,15 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	{
 		if (!isPaused && sugar.getHealth() > 0)
 		{
-			sugar.handleInput();
+			sugar.handleInput(bulletPool, bullets);
 			update(Gdx.graphics.getDeltaTime());
 		}
 
 		if (sugar.getHealth() <= 0 && !isGameOver) {
 			isGameOver = true; // Nastavite, da je igra končana
 			gameOverStartTime = TimeUtils.millis(); // Posodobite časovnik za začetni čas izpisa
+
+
 		}
 
 		if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
@@ -225,6 +250,8 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		sugar.setHealth(100);
 		IceCream.setIceCreamsCollected(0);
 		Bonus.setBonusCollected(0);
+
+		iceCreams.clear();
 		bonuses.clear();
 		waterDrops.clear();
 		bonuses.clear();
@@ -249,7 +276,8 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				float y = (Gdx.graphics.getHeight() - layout.height) / 2;
 
 				font.draw(batch, "GAME OVER", x, y);
-			} else {
+			} else
+			{
 				resetGame();
 			}
 		}
@@ -266,7 +294,11 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			waterdrop.draw(batch);
 		}
 
-		bullet.draw(batch);
+		for(Bullet bullet: bullets)
+		{
+			bullet.draw(batch);
+		}
+
 
 		for(Bonus bonus: bonuses)
 		{

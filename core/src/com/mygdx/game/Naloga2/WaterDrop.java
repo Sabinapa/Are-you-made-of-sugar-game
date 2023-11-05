@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Iterator;
 
-public class WaterDrop extends DynamicGameObject {
+public class WaterDrop extends DynamicGameObject  implements Pool.Poolable{
 
     private static final float SPEED = 170f;
     private static final float DAMAGE = 25f;

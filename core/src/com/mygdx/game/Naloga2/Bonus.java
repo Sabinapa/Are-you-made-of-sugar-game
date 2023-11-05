@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Iterator;
 
-public class Bonus extends DynamicGameObject
+public class Bonus extends DynamicGameObject  implements Pool.Poolable
 {
     private static final float SPEED = 200f;
     private static final float SPAWN_TIME = 5f;

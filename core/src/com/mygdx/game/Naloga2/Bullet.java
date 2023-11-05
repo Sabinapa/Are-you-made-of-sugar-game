@@ -1,66 +1,57 @@
 package com.mygdx.game.Naloga2;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 
-import java.util.Iterator;
-
-public class Bullet extends DynamicGameObject {
-    private int hitObjects = 0;
+public class Bullet extends DynamicGameObject  implements Pool.Poolable{
+    private static int hitObjects;
     private static final float SPEED = 100f;
 
     private Texture BulletTexture;
-    private Array<Rectangle> bullets;
-    private float widthT, heightT;
 
-    public Bullet(Texture texture, float x, float y, float width, float height, Array<Rectangle> bullets) {
-        super(texture, x, y, width, height);
-        widthT = width;
-        heightT = height;
-        this.bullets = bullets;
+    public Rectangle bounds;
+
+    public Bullet(Texture texture) {
+        super(texture, 0, 0, texture.getWidth(), texture.getHeight());
 
         BulletTexture = texture;
+
+        bounds = new Rectangle(0, 0, BulletTexture.getWidth(), BulletTexture.getHeight());
     }
 
-    /*
-    public void update(float delta, WaterDrop waterDrop) {
-        for (Iterator<Rectangle> bulletsit = bullets.iterator(); bulletsit.hasNext(); ) {
-            Rectangle bullet = bulletsit.next();
-            bullet.y += SPEED * delta;
-
-            for (Iterator<Rectangle> it = waterDrop.getWaterDrops().iterator(); it.hasNext(); ) {
-                Rectangle water = it.next();
-                if (bullet.overlaps(water)) {
-                    hitObjects++;
-                    System.out.println("Hit waterDrops number: " + hitObjects);
-                    it.remove();
-                    bulletsit.remove();
-                }
-            }
-        }
-    }
-
-     */
-
-    public void shoot(Rectangle bounds) {
-        Rectangle bullet = new Rectangle();
+    public static void shoot(Rectangle bounds, Array<Bullet> bullets, Pool<Bullet> bulletPool) {
+        Bullet bullet = bulletPool.obtain();
         System.out.println("shot");
-        bullet.x = bounds.x + 10 + bounds.width / 2 - widthT / 2;
-        bullet.y = bounds.y + bounds.height ;
-        bullet.width = widthT;
-        bullet.height = heightT;
+        bullet.bounds.setPosition(bounds.x + bounds.width / 2 - Assets.bulletImg.getWidth() / 2f, bounds.y + bounds.height);
         bullets.add(bullet);
 
+    }
+
+    public static void setHitObjects(int hitObjects) {
+        Bullet.hitObjects = hitObjects;
+
+    }
+
+    public static int getHitObjects() {
+        return hitObjects;
     }
 
     @Override
     public void draw(SpriteBatch batch)
     {
-        for (Rectangle bullet : bullets) {
-            batch.draw(BulletTexture, bullet.x, bullet.y);
-        }
+            batch.draw(BulletTexture, bounds.x, bounds.y);
+    }
 
+    public void update(float delta) {
+        bounds.y += SPEED * delta;
+    }
+
+    public void reset() {
+        bounds.set(0, 0, BulletTexture.getWidth(), BulletTexture.getHeight());
     }
 }
