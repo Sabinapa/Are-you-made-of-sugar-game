@@ -123,4 +123,5 @@ public class SugarCube extends DynamicGameObject
             position.x = Gdx.graphics.getWidth() - widthT;
         updateBounds();
     }
+
 }

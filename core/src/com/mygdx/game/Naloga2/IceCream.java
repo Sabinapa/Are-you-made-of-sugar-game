@@ -16,15 +16,12 @@ public class IceCream extends DynamicGameObject implements Pool.Poolable{
     private static float iceCreamSpawnTime;
     private static int iceCreamsCollected;
 
-    private SugarCube sugarCube;
-
     private Texture iceCreamTexture;
 
     public Rectangle bounds;
 
-    public IceCream(Texture texture, SugarCube sugarCube) {
+    public IceCream(Texture texture) {
         super(texture, 0, 0, texture.getWidth(), texture.getHeight());
-        this.sugarCube = sugarCube;
         iceCreamTexture = texture;
 
         bounds = new Rectangle(0, 0, iceCreamTexture.getWidth(), iceCreamTexture.getHeight());

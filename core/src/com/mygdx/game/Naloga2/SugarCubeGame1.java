@@ -25,15 +25,14 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	private SugarCube sugar;
 
-	private IceCream iceCream;
-
 	private Array<IceCream> iceCreams;
 
 	Pool<IceCream> iceCreamPool;
 
-	private WaterDrop waterDrop;
+	private Array<WaterDrop> waterDrops;
 
-	private Array<Rectangle> waterDrops;
+	Pool<WaterDrop> waterDropPool;
+
 	private Bullet bullet;
 
 	private Array<Rectangle> bullets;
@@ -41,7 +40,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	private Bonus bonus;
 
 	private Array<Rectangle> bonuses;
-
 
 	float width, height;
 
@@ -71,15 +69,19 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		iceCreamPool = new Pool<IceCream>() {
 			@Override
 			protected IceCream newObject() {
-				return new IceCream(iceCreamImg,  sugar);
+				return new IceCream(iceCreamImg);
 			}
 		};
 
-		//iceCreams = new Array<>();
-		//iceCream = new IceCream(iceCreamImg, 0, 0, iceCreamImg.getWidth(), iceCreamImg.getHeight(), sugar, iceCreams);
-
 		waterDrops = new Array<>();
-		waterDrop = new WaterDrop(waterImg, 0, 0, waterImg.getWidth(), waterImg.getHeight(), sugar, waterDrops);
+		waterDropPool = new Pool<WaterDrop>() {
+			@Override
+			protected WaterDrop newObject() {
+				return new WaterDrop(waterImg);
+			}
+		};
+
+
 
 		bonuses = new Array<>();
 		bonus = new Bonus(bonusImg, 0, 0, bonusImg.getWidth(), bonusImg.getHeight(), sugar, bonuses);
@@ -94,33 +96,51 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 		//ICECREAM UPDATE
 		if (elapsedTime - IceCream.getIceCreamSpawnTime() > IceCream.getSPAWN_TIME()) IceCream.spawnIceCream(iceCreamPool, iceCreams);
+		if (elapsedTime - WaterDrop.getWaterSpawnTime() > WaterDrop.getWATER_SPAWN_TIME()) WaterDrop.spawnWaterDrop(waterDropPool, waterDrops);
 
-			for (Iterator<IceCream> it = iceCreams.iterator(); it.hasNext(); ) {
-				IceCream iceCream = it.next();
-				iceCream.update(delta);
+		for (Iterator<IceCream> it = iceCreams.iterator(); it.hasNext(); ) {
+			IceCream iceCream = it.next();
+			iceCream.update(delta);
 
-				// Preveri, ali je ledena krema dosežena spodnji rob zaslona.
-				if (iceCream.bounds.y + iceCreamImg.getHeight() < 0) {
+			// Preveri, ali je ledena krema dosežena spodnji rob zaslona.
+			if (iceCream.bounds.y + iceCreamImg.getHeight() < 0) {
+				it.remove();
+				// Pripeljite ledeno kremo nazaj v bazen.
+				iceCreamPool.free(iceCream);
+				iceCream.reset();
+			}
+
+			// Preveri, ali ledena krema prekriva SugarCube.
+			if (iceCream.bounds.overlaps(sugar.getBounds())) {
+				IceCream.setIceCreamsCollected(IceCream.getIceCreamsCollected() + 1);
+				Assets.IceCreamCollect.play();
+				System.out.println("Ice cream collected: " + IceCream.getIceCreamsCollected());
+				it.remove();
+				iceCream.reset();
+				// Prav tako vrnite ledena kremo v bazen.
+				iceCreamPool.free(iceCream);
+			}
+		}
+		//WATERDROP
+		for (Iterator<WaterDrop> it = waterDrops.iterator(); it.hasNext(); ) {
+			WaterDrop water = it.next();
+			water.update(delta);
+
+			if (water.bounds.y + waterImg.getHeight() < 0) {
+				it.remove();
+			}
+				if (water.bounds.overlaps(sugar.getBounds())) {
+					if (!sugar.isInvulnerable) {
+						sugar.setHealth((int) (sugar.getHealth() - water.getDamage()));
+						System.out.println("CurrentHealth: " + sugar.getHealth());
+						Assets.waterDropVoice.play();
+					}
 					it.remove();
-					// Pripeljite ledeno kremo nazaj v bazen.
-					iceCreamPool.free(iceCream);
-					iceCream.reset();
-				}
-
-				// Preveri, ali ledena krema prekriva SugarCube.
-				if (iceCream.bounds.overlaps(sugar.getBounds())) {
-					IceCream.setIceCreamsCollected(IceCream.getIceCreamsCollected() + 1);
-					Assets.IceCreamCollect.play();
-					System.out.println("Ice cream collected: " + IceCream.getIceCreamsCollected());
-					it.remove();
-					iceCream.reset();
-					// Prav tako vrnite ledena kremo v bazen.
-					iceCreamPool.free(iceCream);
 				}
 			}
 
-		waterDrop.update(delta);
-		bullet.update(delta, waterDrop);
+
+		//bullet.update(delta, waterDrop);
 		bonus.update(delta);
 	}
 
@@ -209,7 +229,11 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			iceCream.draw(batch);
 		}
 
-		waterDrop.draw(batch);
+		for(WaterDrop waterdrop: waterDrops)
+		{
+			waterdrop.draw(batch);
+		}
+
 		bullet.draw(batch);
 		bonus.draw(batch);
 

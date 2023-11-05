@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Iterator;
@@ -16,72 +17,48 @@ public class WaterDrop extends DynamicGameObject {
     private static final float DAMAGE = 25f;
     private static final float SPAWN_TIME = 1f;
 
-    private float waterSpawnTime;
-    private SugarCube sugarCube;
+    private static float waterSpawnTime;
 
     private Texture waterDropTexture;
-    public Array<Rectangle> waterDrops;
-    private Rectangle bounds;
+    public Rectangle bounds;
 
-    private float widthT, heightT;
 
-    public WaterDrop(Texture texture, float x, float y, float width, float height, SugarCube sugarCube, Array<Rectangle> waterDrops) {
-        super(texture, x, y, width, height);
-        this.sugarCube = sugarCube;
-        widthT = width;
-        heightT = height;
-        this.waterDrops = waterDrops;
+    public WaterDrop(Texture texture) {
+        super(texture, 0, 0, texture.getWidth(), texture.getHeight());
         waterDropTexture = texture;
 
-        bounds = new Rectangle(x, y, width, height);
+        bounds = new Rectangle(0, 0, waterDropTexture.getWidth(), waterDropTexture.getHeight());
     }
 
-    public Array getWaterDrops() {
-        return waterDrops;
+    public static float getWaterSpawnTime() {
+        return waterSpawnTime;
     }
 
-    public void update(float delta) {
-        //if (elapsedTime - waterSpawnTime > WATER_SPAWN_TIME) spawnWater();
-        waterSpawnTime += delta; // Increment the spawn timer based on delta
-
-        if (waterSpawnTime > SPAWN_TIME) {
-            spawnWaterDrop();
-            waterSpawnTime = 0; // Reset the spawn timer
-        }
-
-        for (Iterator<Rectangle> it = waterDrops.iterator(); it.hasNext(); ) {
-            Rectangle water = it.next();
-
-            water.y -= SPEED * delta;
-            if (water.y + heightT < 0) {
-                it.remove();
-            }
-            if (water.overlaps(sugarCube.getBounds())) {
-                if (!sugarCube.isInvulnerable) {
-                    sugarCube.setHealth((int) (sugarCube.getHealth() - DAMAGE));
-                    System.out.println("CurrentHealth: " + sugarCube.getHealth());
-                    Assets.waterDropVoice.play();
-                }
-                it.remove();
-            }
-        }
+    public static float getWATER_SPAWN_TIME()
+    {
+        return SPAWN_TIME;
     }
 
-    private void spawnWaterDrop() {
-        Rectangle water = new com.badlogic.gdx.math.Rectangle();
-        water.x = MathUtils.random(0f, Gdx.graphics.getWidth() - widthT);
-        water.y = Gdx.graphics.getHeight();
-        water.width = widthT;
-        water.height = heightT;
-        waterDrops.add(water);
+    public static void spawnWaterDrop(Pool<WaterDrop> waterDropPool, Array<WaterDrop> waterDrops) {
+        WaterDrop waterdrop = waterDropPool.obtain();
+        float randomX = MathUtils.random(0f, Gdx.graphics.getWidth() - Assets.iceCreamImg.getWidth());
+        float randomY = Gdx.graphics.getHeight();
+        waterdrop.bounds.x = (int) randomX;
+        waterdrop.bounds.y = (int) randomY;
+        waterDrops.add(waterdrop);
         waterSpawnTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f;
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        for (Rectangle waterDrop : waterDrops) {
-            batch.draw(waterDropTexture, waterDrop.x, waterDrop.y);
-        }
+            batch.draw(waterDropTexture, bounds.x, bounds.y);
     }
 
+    public void update(float delta) {
+        bounds.y -= SPEED * delta;
+    }
+
+    public int getDamage() {
+        return (int) DAMAGE;
+    }
 }

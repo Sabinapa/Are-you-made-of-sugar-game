@@ -24,6 +24,7 @@ public class Bullet extends DynamicGameObject {
         BulletTexture = texture;
     }
 
+    /*
     public void update(float delta, WaterDrop waterDrop) {
         for (Iterator<Rectangle> bulletsit = bullets.iterator(); bulletsit.hasNext(); ) {
             Rectangle bullet = bulletsit.next();
@@ -40,6 +41,8 @@ public class Bullet extends DynamicGameObject {
             }
         }
     }
+
+     */
 
     public void shoot(Rectangle bounds) {
         Rectangle bullet = new Rectangle();
