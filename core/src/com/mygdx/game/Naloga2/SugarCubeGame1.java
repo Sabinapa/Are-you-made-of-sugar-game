@@ -15,15 +15,21 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
+
+import java.util.Iterator;
 
 public class SugarCubeGame1 extends ApplicationAdapter {
 	SpriteBatch batch;
 
 	private SugarCube sugar;
+
 	private IceCream iceCream;
 
-	private Array<Rectangle> iceCreams;
+	private Array<IceCream> iceCreams;
+
+	Pool<IceCream> iceCreamPool;
 
 	private WaterDrop waterDrop;
 
@@ -35,6 +41,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	private Bonus bonus;
 
 	private Array<Rectangle> bonuses;
+
 
 	float width, height;
 
@@ -61,7 +68,15 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		sugar.initializeSugarPosition();
 
 		iceCreams = new Array<>();
-		iceCream = new IceCream(iceCreamImg, 0, 0, iceCreamImg.getWidth(), iceCreamImg.getHeight(), sugar, iceCreams);
+		iceCreamPool = new Pool<IceCream>() {
+			@Override
+			protected IceCream newObject() {
+				return new IceCream(iceCreamImg,  sugar);
+			}
+		};
+
+		//iceCreams = new Array<>();
+		//iceCream = new IceCream(iceCreamImg, 0, 0, iceCreamImg.getWidth(), iceCreamImg.getHeight(), sugar, iceCreams);
 
 		waterDrops = new Array<>();
 		waterDrop = new WaterDrop(waterImg, 0, 0, waterImg.getWidth(), waterImg.getHeight(), sugar, waterDrops);
@@ -74,14 +89,39 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	}
 
 	private void update(float delta) {
-		//float elapsedTime = (TimeUtils.nanosToMillis(TimeUtils.nanoTime()));
+		float elapsedTime = (TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f);
 		sugar.update(delta);
-		iceCream.update(delta);
+
+		//ICECREAM UPDATE
+		if (elapsedTime - IceCream.getIceCreamSpawnTime() > IceCream.getSPAWN_TIME()) IceCream.spawnIceCream(iceCreamPool, iceCreams);
+
+			for (Iterator<IceCream> it = iceCreams.iterator(); it.hasNext(); ) {
+				IceCream iceCream = it.next();
+				iceCream.update(delta);
+
+				// Preveri, ali je ledena krema dosežena spodnji rob zaslona.
+				if (iceCream.bounds.y + iceCreamImg.getHeight() < 0) {
+					it.remove();
+					// Pripeljite ledeno kremo nazaj v bazen.
+					iceCreamPool.free(iceCream);
+					iceCream.reset();
+				}
+
+				// Preveri, ali ledena krema prekriva SugarCube.
+				if (iceCream.bounds.overlaps(sugar.getBounds())) {
+					IceCream.setIceCreamsCollected(IceCream.getIceCreamsCollected() + 1);
+					Assets.IceCreamCollect.play();
+					System.out.println("Ice cream collected: " + IceCream.getIceCreamsCollected());
+					it.remove();
+					iceCream.reset();
+					// Prav tako vrnite ledena kremo v bazen.
+					iceCreamPool.free(iceCream);
+				}
+			}
+
 		waterDrop.update(delta);
 		bullet.update(delta, waterDrop);
 		bonus.update(delta);
-
-
 	}
 
 	@Override
@@ -128,14 +168,12 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	private void resetGame()
 	{
-		// Po preteku časa izpisa "GAME OVER" nadaljujte z igro
 		isGameOver = false;
-		// Ponastavite vse spremenljivke in postavke igre
+
 		sugar.initializeSugarPosition();
 		sugar.setHealth(100);
-		iceCream.setIceCreamsCollected(0);
+		IceCream.setIceCreamsCollected(0);
 		bonus.setBonusCollected(0);
-		iceCreams.clear();
 		waterDrops.clear();
 		bonuses.clear();
 		bullets.clear();
@@ -165,13 +203,22 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		}
 
 		sugar.draw(batch);
-		iceCream.draw(batch);
+
+		for(IceCream iceCream: iceCreams)
+		{
+			iceCream.draw(batch);
+		}
+
 		waterDrop.draw(batch);
 		bullet.draw(batch);
 		bonus.draw(batch);
 
 		sugar.drawHealth(batch);
-		iceCream.drawIceCreamsCollected(batch);
+		font.setColor(Color.valueOf("#be605e"));
+		font.draw(batch,
+				"SCORE: " + IceCream.getIceCreamsCollected(),
+				25f, Gdx.graphics.getHeight() - 60f
+		);
 		bonus.drawBonusCollected(batch);
 
 	}

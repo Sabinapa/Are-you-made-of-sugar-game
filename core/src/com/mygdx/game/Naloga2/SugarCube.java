@@ -40,6 +40,10 @@ public class SugarCube extends DynamicGameObject
 
     }
 
+    public boolean overlaps(Rectangle other) {
+        return bounds.overlaps(other);
+    }
+
     public Rectangle getBounds() {
         return bounds;
     }

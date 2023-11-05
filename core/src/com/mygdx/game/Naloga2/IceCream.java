@@ -1,102 +1,76 @@
 package com.mygdx.game.Naloga2;
 
-import static com.mygdx.game.Naloga2.Assets.font;
-
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.math.Rectangle;
 
-import java.util.Iterator;
 
-public class IceCream extends DynamicGameObject {
-    private static final float SPEED = 100f;
-    private static final float SPAWN_TIME = 1f;
-    private float iceCreamSpawnTime;
-    private int iceCreamsCollected = 0;
+public class IceCream extends DynamicGameObject implements Pool.Poolable{
+    private static final float SPEED = 100;
+    private static final float SPAWN_TIME = 1.0f;
+    private static float iceCreamSpawnTime;
+    private static int iceCreamsCollected;
 
-    private Array<Rectangle> iceCreams;
     private SugarCube sugarCube;
 
     private Texture iceCreamTexture;
 
-    private Rectangle bounds;
+    public Rectangle bounds;
 
-    private float widthT, heightT;
-
-    public IceCream(Texture texture, float x, float y, float width, float height, SugarCube sugarCube, Array<Rectangle> iceCreams) {
-        super(texture, x, y, width, height);
+    public IceCream(Texture texture, SugarCube sugarCube) {
+        super(texture, 0, 0, texture.getWidth(), texture.getHeight());
         this.sugarCube = sugarCube;
-        this.iceCreams = iceCreams;
-        widthT = width;
-        heightT = height;
         iceCreamTexture = texture;
-        bounds = new Rectangle(x, y, width, height);
+
+        bounds = new Rectangle(0, 0, iceCreamTexture.getWidth(), iceCreamTexture.getHeight());
     }
 
+    public static float getIceCreamSpawnTime() {
+        return iceCreamSpawnTime;
+    }
 
+    public static float getSPAWN_TIME() {
+        return SPAWN_TIME;
+    }
 
-    public int getIceCreamsCollected() {
+    public static int getIceCreamsCollected() {
         return iceCreamsCollected;
     }
 
-    public int setIceCreamsCollected(int iceCreamsCollected) {
-        return this.iceCreamsCollected = iceCreamsCollected;
+    public static int setIceCreamsCollected(int iceCreamsCollected) {
+        return IceCream.iceCreamsCollected = iceCreamsCollected;
     }
 
-    public void drawIceCreamsCollected(SpriteBatch batch)
-    {
-        font.setColor(Color.valueOf("#be605e"));
-        font.draw(batch,
-                "SCORE: " + getIceCreamsCollected(),
-                25f, Gdx.graphics.getHeight() - 60f
-        );
-    }
-
-    public void update(float delta) {
-        //if (elapsedTime - iceCreamSpawnTime > ICE_CREAM_SPAWN_TIME) spawnIceCream();
-        iceCreamSpawnTime += delta; // Increment the spawn timer based on delta
-
-        if (iceCreamSpawnTime > SPAWN_TIME) {
-            spawnIceCream();
-            iceCreamSpawnTime = 0; // Reset the spawn timer
-        }
-
-        for (Iterator<Rectangle> it = iceCreams.iterator(); it.hasNext(); ) {
-            Rectangle iceCream = it.next();
-            iceCream.y -= SPEED * delta;
-            if (iceCream.y + heightT < 0) {
-                it.remove();
-            }
-            if (iceCream.overlaps(sugarCube.getBounds())) {
-                iceCreamsCollected++;
-                Assets.IceCreamCollect.play();
-                System.out.println("Ice cream collected: " + iceCreamsCollected);
-                it.remove();
-            }
-        }
-    }
-
-    private void spawnIceCream() {
-        Rectangle iceCream = new Rectangle();
-        iceCream.x = MathUtils.random(0f, Gdx.graphics.getWidth() - widthT);
-        iceCream.y = Gdx.graphics.getHeight();
-        iceCream.width = widthT;
-        iceCream.height = heightT;
+    public static void spawnIceCream(Pool<IceCream> iceCreamPool, Array<IceCream> iceCreams) {
+        IceCream iceCream = iceCreamPool.obtain();
+        float randomX = MathUtils.random(0f, Gdx.graphics.getWidth() - Assets.iceCreamImg.getWidth());
+        float randomY = Gdx.graphics.getHeight();
+        iceCream.bounds.x = (int) randomX;
+        iceCream.bounds.y = (int) randomY;
         iceCreams.add(iceCream);
         //System.out.println(iceCreams);
         iceCreamSpawnTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f;
+        Gdx.app.log("Dumbbell", "Obtained from pool: X=" + randomX + ", Y=" + randomY);
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        for (Rectangle iceCream : iceCreams) {
-            batch.draw(iceCreamTexture, iceCream.x, iceCream.y);
-        }
+            batch.draw(iceCreamTexture, bounds.x, bounds.y);
+
+    }
+    @Override
+    public void reset() {
+        bounds.y = 0;
+        bounds.x = 0;
     }
 
+    public void update(float delta)
+    {
+        bounds.y -= SPEED * delta;
+    }
 }
