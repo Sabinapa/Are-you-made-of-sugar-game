@@ -52,7 +52,6 @@ public class IceCream extends DynamicGameObject implements Pool.Poolable{
         iceCreams.add(iceCream);
         //System.out.println(iceCreams);
         iceCreamSpawnTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f;
-        Gdx.app.log("Dumbbell", "Obtained from pool: X=" + randomX + ", Y=" + randomY);
     }
 
     @Override

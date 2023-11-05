@@ -43,11 +43,11 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	float width, height;
 
-	private boolean isPaused = false; // Spremenljivka za sledenje stanja pavze
-	private boolean isGameOver = false; // Spremenljivka za sledenje stanja konca igre
+	private boolean isPaused = false;
+	private boolean isGameOver = false;
 
-	private long gameOverStartTime = 0; // Časovnik za sledenje začetnega časa izpisa "GAME OVER"
-	private long gameOverDuration = 5000; // Čas, koliko časa bo sporočilo "GAME OVER" prikazano (v milisekundah)
+	private long gameOverStartTime = 0; // Timer
+	private long gameOverDuration = 5000; // milisenkunde
 
 
 	@Override
@@ -66,7 +66,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				return new Bullet(bulletImg);
 			}
 		};
-
 
 		sugar = new SugarCube(sugarImg, 0, 0, sugarImg.getWidth(), sugarImg.getHeight());
 		sugar.initializeSugarPosition();
@@ -99,20 +98,20 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	private void update(float delta) {
 		float elapsedTime = (TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f);
-		sugar.update(delta);
+		sugar.update();
 
-		//ICECREAM UPDATE
+
 		if (elapsedTime - IceCream.getIceCreamSpawnTime() > IceCream.getSPAWN_TIME()) IceCream.spawnIceCream(iceCreamPool, iceCreams);
 		if (elapsedTime - WaterDrop.getWaterSpawnTime() > WaterDrop.getWATER_SPAWN_TIME()) WaterDrop.spawnWaterDrop(waterDropPool, waterDrops);
 		if (elapsedTime - Bonus.getBonusSpawnTime() > Bonus.getICE_BONUS_TIME()) Bonus.spawnBonus(bonusPool, bonuses);
 
+		//ICECREAM UPDATE
 		for (Iterator<IceCream> it = iceCreams.iterator(); it.hasNext(); ) {
 			IceCream iceCream = it.next();
 			iceCream.update(delta);
 
 			if (iceCream.bounds.y + iceCreamImg.getHeight() < 0) {
 				it.remove();
-				// Pripeljite ledeno kremo nazaj v bazen.
 				iceCreamPool.free(iceCream);
 				iceCream.reset();
 			}
@@ -126,6 +125,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				iceCreamPool.free(iceCream);
 			}
 		}
+
 		//WATERDROP
 		for (Iterator<WaterDrop> it = waterDrops.iterator(); it.hasNext(); ) {
 			WaterDrop water = it.next();
@@ -150,7 +150,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		}
 
 		//BULLETS UPDATE
-
 		for (Iterator<Bullet> bulletsit = bullets.iterator(); bulletsit.hasNext(); ) {
 				Bullet bullet = bulletsit.next();
 				bullet.update(delta);
@@ -171,8 +170,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				bullet.reset();
 			}
 		}
-
-
 
 		//BONUS UPDATE
 		for (Iterator<Bonus> it = bonuses.iterator(); it.hasNext(); ) {
@@ -210,7 +207,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		if (sugar.getHealth() <= 0 && !isGameOver) {
 			isGameOver = true; // Nastavite, da je igra končana
 			gameOverStartTime = TimeUtils.millis(); // Posodobite časovnik za začetni čas izpisa
-
 
 		}
 
@@ -267,7 +263,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			long currentTime = TimeUtils.millis(); // Trenuten čas
 
 			if (currentTime - gameOverStartTime <= gameOverDuration) {
-				// Igra je končana in sporočilo "GAME OVER" se še vedno izpisuje
 				font.setColor(Color.valueOf("#645b77"));
 				GlyphLayout layout = new GlyphLayout(font, "GAME OVER");
 				float textWidth = layout.width;
@@ -298,7 +293,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		{
 			bullet.draw(batch);
 		}
-
 
 		for(Bonus bonus: bonuses)
 		{

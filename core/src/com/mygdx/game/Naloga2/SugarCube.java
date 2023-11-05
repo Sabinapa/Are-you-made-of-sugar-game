@@ -76,7 +76,7 @@ public class SugarCube extends DynamicGameObject
 
     }
 
-    public void update(float delta) {
+    public void update() {
         if (isInvulnerable) {
             long currentTime = TimeUtils.millis();
             if (currentTime - invulnerabilityStartTime >= invulnerabilityDuration) {
@@ -91,7 +91,6 @@ public class SugarCube extends DynamicGameObject
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) moveRight(Gdx.graphics.getDeltaTime());
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            //bullet.shoot(position.x, position.y, widthT, heightT);
             Bullet.shoot(bounds, bullets, bulletPool);
             Assets.LaserGun.play();
         }

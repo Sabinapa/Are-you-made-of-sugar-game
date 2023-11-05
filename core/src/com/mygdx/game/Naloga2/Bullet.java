@@ -24,14 +24,6 @@ public class Bullet extends DynamicGameObject  implements Pool.Poolable{
         bounds = new Rectangle(0, 0, BulletTexture.getWidth(), BulletTexture.getHeight());
     }
 
-    public static void shoot(Rectangle bounds, Array<Bullet> bullets, Pool<Bullet> bulletPool) {
-        Bullet bullet = bulletPool.obtain();
-        System.out.println("shot");
-        bullet.bounds.setPosition(bounds.x + bounds.width / 2 - Assets.bulletImg.getWidth() / 2f, bounds.y + bounds.height);
-        bullets.add(bullet);
-
-    }
-
     public static void setHitObjects(int hitObjects) {
         Bullet.hitObjects = hitObjects;
 
@@ -39,6 +31,14 @@ public class Bullet extends DynamicGameObject  implements Pool.Poolable{
 
     public static int getHitObjects() {
         return hitObjects;
+    }
+
+    public static void shoot(Rectangle bounds, Array<Bullet> bullets, Pool<Bullet> bulletPool) {
+        Bullet bullet = bulletPool.obtain();
+        System.out.println("shot");
+        bullet.bounds.setPosition(bounds.x + bounds.width / 2 - Assets.bulletImg.getWidth() / 2f, bounds.y + bounds.height);
+        bullets.add(bullet);
+
     }
 
     @Override
