@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Iterator;
@@ -17,90 +18,63 @@ public class Bonus extends DynamicGameObject
 {
     private static final float SPEED = 200f;
     private static final float SPAWN_TIME = 5f;
-    private float BonusSpawnTime;
-    private int BonusCollected = 0;
+    private static float BonusSpawnTime;
 
-    private Array<Rectangle> bonuses;
-    private SugarCube sugarCube;
+    public static int BonusCollected;
 
     private Texture bonusTexture;
 
-    private Rectangle bounds;
+    public Rectangle bounds;
 
-    private float widthT, heightT;
 
-    public Bonus(Texture texture, float x, float y, float width, float height, SugarCube sugarCube, Array<Rectangle> bonuses) {
-        super(texture, x, y, width, height);
-        this.sugarCube = sugarCube;
-        this.bonuses = bonuses;
-        widthT = width;
-        heightT = height;
+    public Bonus(Texture texture) {
+        super(texture, 0, 0, texture.getWidth(), texture.getHeight());
         bonusTexture = texture;
-        bounds = new Rectangle(x, y, width, height);
+
+        bounds = new Rectangle(0, 0, bonusTexture.getWidth(), bonusTexture.getHeight());
+    }
+
+    public static float getBonusSpawnTime() {
+        return BonusSpawnTime;
+    }
+
+    public static float getICE_BONUS_TIME()
+    {
+        return SPAWN_TIME;
     }
 
 
-
-    public int getBonusCollected() {
+    public static int getBonusCollected() {
         return BonusCollected;
     }
 
-    public int setBonusCollected(int BonusCollected) {
-        return this.BonusCollected = BonusCollected;
+    public static int setBonusCollected(int BonusCollected) {
+        return Bonus.BonusCollected = BonusCollected;
     }
 
-    public void drawBonusCollected(SpriteBatch batch)
-    {
-        font.setColor(Color.valueOf("#facfa8"));
-        font.draw(batch,
-                "BONUS: " + getBonusCollected(),
-                25f, Gdx.graphics.getHeight() - 100f
-        );
-    }
-
-    public void update(float delta) {
-        //if (elapsedTime - iceCreamSpawnTime > ICE_CREAM_SPAWN_TIME) spawnIceCream();
-        BonusSpawnTime += delta; // Increment the spawn timer based on delta
-
-        if (BonusSpawnTime > SPAWN_TIME) {
-            spawnBonus();
-            BonusSpawnTime = 0; // Reset the spawn timer
-        }
-
-        for (Iterator<Rectangle> it = bonuses.iterator(); it.hasNext(); ) {
-            Rectangle iceCream = it.next();
-            iceCream.y -= SPEED * delta;
-            if (iceCream.y + heightT < 0) {
-                it.remove();
-            }
-            if (iceCream.overlaps(sugarCube.getBounds())) {
-                BonusCollected++;
-                //sugarCube.setHealth(sugarCube.getHealth() + 10);
-                Assets.IceCreamCollect.play();
-                System.out.println("Bonus collected: " + BonusCollected);
-                sugarCube.isInvulnerable = true;
-                sugarCube.invulnerabilityStartTime = TimeUtils.millis();
-                it.remove();
-            }
-        }
-    }
-
-    private void spawnBonus() {
-        Rectangle iceCream = new Rectangle();
-        iceCream.x = MathUtils.random(0f, Gdx.graphics.getWidth() - widthT);
-        iceCream.y = Gdx.graphics.getHeight();
-        iceCream.width = widthT;
-        iceCream.height = heightT;
-        bonuses.add(iceCream);
+    public static void spawnBonus(Pool<Bonus> bonusPool, Array<Bonus> bonuses) {
+        Bonus bonus = bonusPool.obtain();
+        float randomX = MathUtils.random(0f, Gdx.graphics.getWidth() - Assets.iceCreamImg.getWidth());
+        float randomY = Gdx.graphics.getHeight();
+        bonus.bounds.x = (int) randomX;
+        bonus.bounds.y = (int) randomY;
+        bonuses.add(bonus);
         //System.out.println(iceCreams);
         BonusSpawnTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f;
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        for (Rectangle iceCream : bonuses) {
-            batch.draw(bonusTexture, iceCream.x, iceCream.y);
-        }
+            batch.draw(bonusTexture, bounds.x, bounds.y);
     }
 
+    public void update(float delta)
+    {
+        bounds.y -= SPEED * delta;
+    }
+
+    public void reset() {
+        bounds.y = 0;
+        bounds.x = 0;
+    }
 }

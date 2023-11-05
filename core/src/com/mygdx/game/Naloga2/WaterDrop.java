@@ -61,4 +61,9 @@ public class WaterDrop extends DynamicGameObject {
     public int getDamage() {
         return (int) DAMAGE;
     }
+
+    public void reset() {
+        bounds.y = 0;
+        bounds.x = 0;
+    }
 }

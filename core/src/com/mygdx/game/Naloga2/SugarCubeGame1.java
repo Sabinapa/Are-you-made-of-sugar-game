@@ -37,9 +37,9 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	private Array<Rectangle> bullets;
 
-	private Bonus bonus;
+	private Array<Bonus> bonuses;
 
-	private Array<Rectangle> bonuses;
+	Pool<Bonus> bonusPool;
 
 	float width, height;
 
@@ -84,7 +84,13 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 
 		bonuses = new Array<>();
-		bonus = new Bonus(bonusImg, 0, 0, bonusImg.getWidth(), bonusImg.getHeight(), sugar, bonuses);
+		bonusPool = new Pool<Bonus>() {
+			@Override
+			protected Bonus newObject() {
+				return new Bonus(bonusImg);
+			}
+		};
+
 
 
 
@@ -97,6 +103,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		//ICECREAM UPDATE
 		if (elapsedTime - IceCream.getIceCreamSpawnTime() > IceCream.getSPAWN_TIME()) IceCream.spawnIceCream(iceCreamPool, iceCreams);
 		if (elapsedTime - WaterDrop.getWaterSpawnTime() > WaterDrop.getWATER_SPAWN_TIME()) WaterDrop.spawnWaterDrop(waterDropPool, waterDrops);
+		if (elapsedTime - Bonus.getBonusSpawnTime() > Bonus.getICE_BONUS_TIME()) Bonus.spawnBonus(bonusPool, bonuses);
 
 		for (Iterator<IceCream> it = iceCreams.iterator(); it.hasNext(); ) {
 			IceCream iceCream = it.next();
@@ -117,7 +124,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				System.out.println("Ice cream collected: " + IceCream.getIceCreamsCollected());
 				it.remove();
 				iceCream.reset();
-				// Prav tako vrnite ledena kremo v bazen.
 				iceCreamPool.free(iceCream);
 			}
 		}
@@ -128,20 +134,45 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 			if (water.bounds.y + waterImg.getHeight() < 0) {
 				it.remove();
+				water.reset();
+				waterDropPool.free(water);
 			}
-				if (water.bounds.overlaps(sugar.getBounds())) {
-					if (!sugar.isInvulnerable) {
-						sugar.setHealth((int) (sugar.getHealth() - water.getDamage()));
-						System.out.println("CurrentHealth: " + sugar.getHealth());
-						Assets.waterDropVoice.play();
-					}
+			if (water.bounds.overlaps(sugar.getBounds())) {
+				if (!sugar.isInvulnerable) {
+					sugar.setHealth( (sugar.getHealth() - water.getDamage()));
+					System.out.println("CurrentHealth: " + sugar.getHealth());
+					Assets.waterDropVoice.play();
 					it.remove();
+					water.reset();
+					waterDropPool.free(water);
 				}
-			}
 
+			}
+		}
 
 		//bullet.update(delta, waterDrop);
-		bonus.update(delta);
+		//BONUS UPDATE
+		for (Iterator<Bonus> it = bonuses.iterator(); it.hasNext(); ) {
+			Bonus bonus = it.next();
+			bonus.update(delta);
+
+			if (bonus.bounds.y + bonusImg.getHeight() < 0) {
+				it.remove();
+				bonusPool.free(bonus);
+				bonus.reset();
+			}
+			if (bonus.bounds.overlaps(sugar.getBounds())) {
+				Bonus.setBonusCollected(Bonus.getBonusCollected() + 1);
+				Assets.IceCreamCollect.play();
+				System.out.println("Bonus collected: " + Bonus.getBonusCollected());
+				sugar.isInvulnerable = true;
+				sugar.invulnerabilityStartTime = TimeUtils.millis();
+				it.remove();
+				bonus.reset();
+				bonusPool.free(bonus);
+			}
+		}
+
 	}
 
 	@Override
@@ -193,7 +224,8 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		sugar.initializeSugarPosition();
 		sugar.setHealth(100);
 		IceCream.setIceCreamsCollected(0);
-		bonus.setBonusCollected(0);
+		Bonus.setBonusCollected(0);
+		bonuses.clear();
 		waterDrops.clear();
 		bonuses.clear();
 		bullets.clear();
@@ -235,7 +267,11 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		}
 
 		bullet.draw(batch);
-		bonus.draw(batch);
+
+		for(Bonus bonus: bonuses)
+		{
+			bonus.draw(batch);
+		}
 
 		sugar.drawHealth(batch);
 		font.setColor(Color.valueOf("#be605e"));
@@ -243,7 +279,12 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				"SCORE: " + IceCream.getIceCreamsCollected(),
 				25f, Gdx.graphics.getHeight() - 60f
 		);
-		bonus.drawBonusCollected(batch);
+
+		font.setColor(Color.valueOf("#facfa8"));
+		font.draw(batch,
+				"BONUS: " + Bonus.getBonusCollected(),
+				25f, Gdx.graphics.getHeight() - 100f
+		);
 
 	}
 
