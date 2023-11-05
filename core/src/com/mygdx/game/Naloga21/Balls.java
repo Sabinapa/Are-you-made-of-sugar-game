@@ -15,25 +15,28 @@ public class Balls extends ApplicationAdapter {
     private Array<Ball> balls;
 
     public class Ball {
-        Vector2 position;
-        Vector2 velocity;
-        float radius;
+        Vector2 position; //position of the ball
+        Vector2 velocity; //hitrost žoge
+        float radius; //size of ball
         Color color;
 
         public Ball(Vector2 initialPosition) {
             position = initialPosition;
-            velocity = new Vector2(0, -20); // Začetna hitrost nič
+            velocity = new Vector2(0, -20); // Začetna hitrost
             radius = MathUtils.random(10, 40); // Naključna velikost žogice
             color = new Color(MathUtils.random(), MathUtils.random(), MathUtils.random(), 1); // Naključna barva
         }
 
         public void update() {
             float dt = Gdx.graphics.getDeltaTime();
-            velocity.y -= 19.81f * dt; // Gravitacija
+            velocity.y -= 19.81f * dt; // Stimulacija Gravitacije
 
-            position.add(velocity.cpy().scl(dt));
+            //cpy() - kopiranje vektorja
+            //scl() - množenje vektorja s skalarjem
+            position.add(velocity.cpy().scl(dt)); //posodobitev pozicije
 
-            if (position.y - radius < 0) {
+            if (position.y - radius < 0) // Odboj od tal
+            {
                 position.y = radius;
                 velocity.y = -velocity.y * 0.9f; // Odboj od tal z izgubo del hitrosti
             }
@@ -42,12 +45,12 @@ public class Balls extends ApplicationAdapter {
 
     @Override
     public void create() {
-        shapeRenderer = new ShapeRenderer();
+        shapeRenderer = new ShapeRenderer(); //risanje oblik
         balls = new Array<>();
         Gdx.input.setInputProcessor(new InputAdapter()
         {
             @Override
-            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) { //ko kliknemo na zaslon
                 Vector2 clickPosition = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
                 balls.add(new Ball(clickPosition));
                 return true;

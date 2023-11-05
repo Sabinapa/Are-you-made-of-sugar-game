@@ -33,11 +33,12 @@ public class Wheels extends ApplicationAdapter
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Simulirajte vrtenje kolesa za nek kot
-        float alpha = 1.0f; // Kot, za katerega se kolo vrti (lahko prilagodite)
+        // Simulirajte vrtenje kolesa
+        float alpha = 1.0f; // Kot, za katerega se kolo vrti
         angle += alpha;
 
-        // Izračunajte novo pozicijo kolesa na podlagi formule
+        // Izračunana nova pozicija kolesa na podlagi formule (kota in polmera)
+        //izračunana razdalje ki kolo prepotuje
         float distance = (float) ((angle * 2 * Math.PI * radius) / 360);
         float newX = (float) (x + distance);
 
