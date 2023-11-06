@@ -178,8 +178,8 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 			if (bonus.bounds.y + bonusImg.getHeight() < 0) {
 				it.remove();
-				bonusPool.free(bonus);
 				bonus.reset();
+				bonusPool.free(bonus);
 			}
 			if (bonus.bounds.overlaps(sugar.getBounds())) {
 				Bonus.setBonusCollected(Bonus.getBonusCollected() + 1);
