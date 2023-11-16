@@ -113,7 +113,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			if (iceCream.bounds.y + iceCreamImg.getHeight() < 0) {
 				it.remove();
 				iceCreamPool.free(iceCream);
-				iceCream.reset();
+				//iceCream.reset();
 			}
 
 			if (iceCream.bounds.overlaps(sugar.getBounds())) {
@@ -121,7 +121,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				Assets.IceCreamCollect.play();
 				System.out.println("Ice cream collected: " + IceCream.getIceCreamsCollected());
 				it.remove();
-				iceCream.reset();
+				//iceCream.reset();
 				iceCreamPool.free(iceCream);
 			}
 		}
@@ -142,7 +142,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 					System.out.println("CurrentHealth: " + sugar.getHealth());
 					Assets.waterDropVoice.play();
 					it.remove();
-					water.reset();
+					//water.reset();
 					waterDropPool.free(water);
 				}
 
@@ -167,7 +167,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			if (bullet.bounds.y + bulletImg.getHeight() > height) {
 				bulletsit.remove();
 				bulletPool.free(bullet);
-				bullet.reset();
+				//bullet.reset();
 			}
 		}
 
@@ -247,6 +247,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		IceCream.setIceCreamsCollected(0);
 		Bonus.setBonusCollected(0);
 
+		iceCreamPool.freeAll(iceCreams);
 		iceCreams.clear();
 		bonuses.clear();
 		waterDrops.clear();
