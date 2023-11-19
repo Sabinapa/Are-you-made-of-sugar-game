@@ -10,12 +10,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
 
 import java.util.Iterator;
 
@@ -69,8 +71,13 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 	private static final float ICE_CREAM_SPAWN_TIME = 1f;    // in sec
 	private static final float BULLET_SPEED = 100f;
 
-	private Viewport viewport;
-	
+	private static final float WORLD_WIDTH = 576;
+	private static final float WORLD_HEIGHT = 324;
+
+	public Viewport viewport;
+	private OrthographicCamera camera;
+
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -87,12 +94,10 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 
 		font = new BitmapFont(Gdx.files.internal("assets/SugarGame/fonts/arial-32.fnt"));
 
-		// Initialize the viewport with the world dimensions
-		viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		viewport.apply();
+		viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT);
 
 		sugar = new Rectangle();
-		sugar.x = (int) (viewport.getWorldWidth() / 2f - sugarImg.getWidth() / 2f);
+		sugar.x = (int) (Gdx.graphics.getWidth() / 2f - sugarImg.getWidth() / 2f);
 		sugar.y = (int) 20f;
 		sugar.width = sugarImg.getWidth();
 		sugar.height = sugarImg.getHeight();
@@ -108,11 +113,21 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 		bullets = new Array<>();
 
 		hitObjects = 0;
+
+		viewport.apply();
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, WORLD_WIDTH, WORLD_HEIGHT);
+		camera.position.set(WORLD_WIDTH/2, WORLD_HEIGHT/2, 0);
+		camera.update();
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		viewport.update(width, height, true);
+		camera.position.set(WORLD_WIDTH/2, WORLD_HEIGHT/2, 0);
+		camera.update();
+		batch.setProjectionMatrix(camera.combined);
+
 	}
 
 	@Override
@@ -124,9 +139,7 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 			update(Gdx.graphics.getDeltaTime());
 		}
 
-		// Apply the viewport
-		viewport.apply();
-		batch.setProjectionMatrix(viewport.getCamera().combined);
+		batch.setProjectionMatrix(camera.combined);
 
 		batch.begin();
 
@@ -202,7 +215,7 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 			GlyphLayout layout = new GlyphLayout(font, "GAME OVER");
 			float textWidth = layout.width;
 
-			float x = (viewport.getWorldWidth() - textWidth) / 2;
+			float x = (viewport.getWorldWidth()- textWidth) / 2;
 			float y = (viewport.getWorldHeight() - layout.height) / 2;
 
 			font.draw(batch,
@@ -254,7 +267,7 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 
 	private void spawnIceCream() {
 		Rectangle IceCream = new Rectangle();
-		IceCream.x = MathUtils.random(0f, viewport.getWorldWidth() - iceCreamImg.getWidth());
+		IceCream.x = MathUtils.random(0f, viewport.getWorldWidth()- iceCreamImg.getWidth());
 		IceCream.y = viewport.getWorldHeight();
 		IceCream.width = iceCreamImg.getWidth();
 		IceCream.height = iceCreamImg.getHeight();
@@ -264,7 +277,7 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 
 	private void spawnWater() {
 		Rectangle water = new com.badlogic.gdx.math.Rectangle();
-		water.x = MathUtils.random(0f, viewport.getWorldWidth()- waterImg.getWidth());
+		water.x = MathUtils.random(0f, viewport.getWorldWidth() - waterImg.getWidth());
 		water.y = viewport.getWorldHeight();
 		water.width = waterImg.getWidth();
 		water.height = waterImg.getHeight();
@@ -294,4 +307,3 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 
 	}
 }
-

@@ -66,4 +66,8 @@ public class WaterDrop extends DynamicGameObject  implements Pool.Poolable{
         bounds.y = 0;
         bounds.x = 0;
     }
+
+    public Rectangle getBounds() {
+        return bounds;
+    }
 }

@@ -24,6 +24,10 @@ public class Bullet extends DynamicGameObject  implements Pool.Poolable{
         bounds = new Rectangle(0, 0, BulletTexture.getWidth(), BulletTexture.getHeight());
     }
 
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
     public static void setHitObjects(int hitObjects) {
         Bullet.hitObjects = hitObjects;
 

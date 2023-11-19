@@ -26,12 +26,24 @@ public class Bonus extends DynamicGameObject  implements Pool.Poolable
 
     public Rectangle bounds;
 
+    public float starEffectX;
+    public float starEffectY;
+
 
     public Bonus(Texture texture) {
         super(texture, 0, 0, texture.getWidth(), texture.getHeight());
         bonusTexture = texture;
 
         bounds = new Rectangle(0, 0, bonusTexture.getWidth(), bonusTexture.getHeight());
+    }
+
+    public void updateStarEffectPosition(float x, float y) {
+        starEffectX = x;
+        starEffectY = y;
+    }
+
+    public Rectangle getBounds() {
+        return bounds;
     }
 
     public static float getBonusSpawnTime() {

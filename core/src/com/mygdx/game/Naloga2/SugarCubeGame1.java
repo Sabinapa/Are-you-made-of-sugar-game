@@ -11,12 +11,20 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.util.ViewportUtils;
+import com.mygdx.game.util.debug.DebugCameraController;
+import com.mygdx.game.util.debug.MemoryInfo;
 
 import java.util.Iterator;
 
@@ -26,22 +34,16 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	private SugarCube sugar;
 
 	private Array<IceCream> iceCreams;
-
 	Pool<IceCream> iceCreamPool;
 
 	private Array<WaterDrop> waterDrops;
-
 	Pool<WaterDrop> waterDropPool;
 
 	private Array<Bullet> bullets;
-
 	Pool<Bullet> bulletPool;
 
 	private Array<Bonus> bonuses;
-
 	Pool<Bonus> bonusPool;
-
-	float width, height;
 
 	private boolean isPaused = false;
 	private boolean isGameOver = false;
@@ -49,15 +51,39 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	private long gameOverStartTime = 0; // Timer
 	private long gameOverDuration = 5000; // milisenkunde
 
+	private boolean debugMode = false;
+
+	private ShapeRenderer shapeRenderer;
+
+	private OrthographicCamera camera;
+
+	private Viewport viewport;
+
+	private DebugCameraController debugCameraController;
+	private MemoryInfo memoryInfo;
+
+	private ParticleEffect starEffect;
+
+	private ParticleEffect fireWorkEffect;
+
+
+
 
 	@Override
 	public void create () {
+		batch = new SpriteBatch();
 		Assets.load();
 
-		width = Gdx.graphics.getWidth();
-		height = Gdx.graphics.getHeight();
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		batch = new SpriteBatch();
+		// debug
+		debugCameraController = new DebugCameraController();
+		debugCameraController.setStartPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+		memoryInfo = new MemoryInfo(500);
+
+		shapeRenderer = new ShapeRenderer();
+		viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
 
 		bullets = new Array<>();
 		bulletPool = new Pool<Bullet>() {
@@ -74,7 +100,9 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		iceCreamPool = new Pool<IceCream>() {
 			@Override
 			protected IceCream newObject() {
-				return new IceCream(iceCreamImg);
+				IceCream iceCream = new IceCream(iceCreamImg);
+				Gdx.app.log("IceCreamPool", "Created new ice cream: " + iceCream);
+				return iceCream;
 			}
 		};
 
@@ -94,12 +122,23 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			}
 		};
 
+		// Load particle effect
+		starEffect = new ParticleEffect();
+		starEffect.load(Gdx.files.internal("assets/SugarGame/particles/star.pe"), Gdx.files.internal("assets/SugarGame/particles"));
+
+		fireWorkEffect = new ParticleEffect();
+		fireWorkEffect.load(Gdx.files.internal("assets/SugarGame/particles/firework.pe"), Gdx.files.internal("assets/SugarGame/particles"));
+
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		viewport.update(width, height, true);
 	}
 
 	private void update(float delta) {
 		float elapsedTime = (TimeUtils.nanosToMillis(TimeUtils.nanoTime()) / 1000f);
 		sugar.update();
-
 
 		if (elapsedTime - IceCream.getIceCreamSpawnTime() > IceCream.getSPAWN_TIME()) IceCream.spawnIceCream(iceCreamPool, iceCreams);
 		if (elapsedTime - WaterDrop.getWaterSpawnTime() > WaterDrop.getWATER_SPAWN_TIME()) WaterDrop.spawnWaterDrop(waterDropPool, waterDrops);
@@ -110,9 +149,14 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			IceCream iceCream = it.next();
 			iceCream.update(delta);
 
-			if (iceCream.bounds.y + iceCreamImg.getHeight() < 0) {
+			if (iceCream.bounds.y + iceCreamImg.getHeight() < 0)
+			{
+				System.out.println("IceCream array size before removal: " + iceCreams.size);
+
 				it.remove();
 				iceCreamPool.free(iceCream);
+
+				System.out.println("IceCream array size after removal: " + iceCreams.size);
 				//iceCream.reset();
 			}
 
@@ -120,6 +164,13 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				IceCream.setIceCreamsCollected(IceCream.getIceCreamsCollected() + 1);
 				Assets.IceCreamCollect.play();
 				System.out.println("Ice cream collected: " + IceCream.getIceCreamsCollected());
+
+				if (IceCream.getIceCreamsCollected() % 5 == 0) {
+					// Trigger firework effect every 5 ice creams
+					fireWorkEffect.setPosition(sugar.getBounds().x + sugar.getBounds().width / 2, sugar.getBounds().y + sugar.getBounds().height / 2);
+					fireWorkEffect.start();
+				}
+
 				it.remove();
 				//iceCream.reset();
 				iceCreamPool.free(iceCream);
@@ -133,7 +184,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 			if (water.bounds.y + waterImg.getHeight() < 0) {
 				it.remove();
-				water.reset();
+				//water.reset();
 				waterDropPool.free(water);
 			}
 			if (water.bounds.overlaps(sugar.getBounds())) {
@@ -164,7 +215,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 					}
 				}
 
-			if (bullet.bounds.y + bulletImg.getHeight() > height) {
+			if (bullet.bounds.y + bulletImg.getHeight() > Gdx.graphics.getHeight()) {
 				bulletsit.remove();
 				bulletPool.free(bullet);
 				//bullet.reset();
@@ -175,6 +226,8 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		for (Iterator<Bonus> it = bonuses.iterator(); it.hasNext(); ) {
 			Bonus bonus = it.next();
 			bonus.update(delta);
+
+			bonus.updateStarEffectPosition(bonus.bounds.x, bonus.bounds.y);
 
 			if (bonus.bounds.y + bonusImg.getHeight() < 0) {
 				it.remove();
@@ -188,11 +241,16 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				sugar.isInvulnerable = true;
 				sugar.invulnerabilityStartTime = TimeUtils.millis();
 				it.remove();
-				bonus.reset();
+				//bonus.reset();
 				bonusPool.free(bonus);
+
 			}
 		}
 
+	}
+
+	private void toggleDebugMode() {
+		debugMode = !debugMode;
 	}
 
 	@Override
@@ -213,6 +271,19 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
 			isPaused = !isPaused; // Preklopi med pavzo in nadaljevanjem igre ob pritisku na tipko P
 		}
+
+		if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
+			toggleDebugMode();
+		}
+
+		if (debugMode)
+		{
+			debugCameraController.handleDebugInput(Gdx.graphics.getDeltaTime());
+			memoryInfo.update();
+		}
+
+		camera.update();
+		batch.setProjectionMatrix(camera.combined);
 
 		batch.begin();
 
@@ -236,18 +307,25 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		}
 
 		batch.end();
+
+		if(debugMode) {
+			renderDebug();
+		}
 	}
 
 	private void resetGame()
 	{
 		isGameOver = false;
-
 		sugar.initializeSugarPosition();
 		sugar.setHealth(100);
 		IceCream.setIceCreamsCollected(0);
 		Bonus.setBonusCollected(0);
 
+		Gdx.app.log("IceCreamPool", "Freed ice cream: " + iceCreams.size);
 		iceCreamPool.freeAll(iceCreams);
+		waterDropPool.freeAll(waterDrops);
+		bonusPool.freeAll(bonuses);
+		bulletPool.freeAll(bullets);
 		iceCreams.clear();
 		bonuses.clear();
 		waterDrops.clear();
@@ -298,9 +376,16 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		for(Bonus bonus: bonuses)
 		{
 			bonus.draw(batch);
+
+			// Draw star effect on top of the bonus
+			starEffect.setPosition(bonus.starEffectX, bonus.starEffectY);
+			starEffect.draw(batch, Gdx.graphics.getDeltaTime());
 		}
 
+		fireWorkEffect.draw(batch, Gdx.graphics.getDeltaTime());
+
 		sugar.drawHealth(batch);
+
 		font.setColor(Color.valueOf("#be605e"));
 		font.draw(batch,
 				"SCORE: " + IceCream.getIceCreamsCollected(),
@@ -313,6 +398,46 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				25f, Gdx.graphics.getHeight() - 100f
 		);
 
+
+	}
+
+	private void renderDebug() {
+		debugCameraController.applyTo(camera);
+		batch.begin();
+		{
+			GlyphLayout layout = new GlyphLayout(Assets.font, "FPS:" + Gdx.graphics.getFramesPerSecond());
+			Assets.font.setColor(Color.YELLOW);
+			Assets.font.draw(batch, layout, Gdx.graphics.getWidth() - layout.width, Gdx.graphics.getHeight() - 50);
+
+			Assets.font.setColor(Color.YELLOW);
+			Assets.font.draw(batch, "RC:" + batch.totalRenderCalls, Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() - 20);
+
+			memoryInfo.render(batch, Assets.font);
+		}
+		batch.end();
+
+		batch.totalRenderCalls = 0;
+		ViewportUtils.drawGrid(viewport, shapeRenderer, 50);
+
+		shapeRenderer.setProjectionMatrix(camera.combined);
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+		{
+			shapeRenderer.setColor(1, 0, 0, 1);
+			for (IceCream icecream : iceCreams) {
+				shapeRenderer.rect(icecream.bounds.x, icecream.bounds.y, iceCreamImg.getWidth(), iceCreamImg.getHeight());
+			}
+			for (WaterDrop waterDrop : waterDrops) {
+				shapeRenderer.rect(waterDrop.bounds.x, waterDrop.bounds.y, waterImg.getWidth(), waterImg.getHeight());
+			}
+			for (Bullet bullet : bullets) {
+				shapeRenderer.rect(bullet.bounds.x, bullet.bounds.y, Assets.bulletImg.getWidth(), Assets.bulletImg.getHeight());
+			}
+			for (Bonus bonus : bonuses) {
+				shapeRenderer.rect(bonus.bounds.x, bonus.bounds.y, bonusImg.getWidth(), bonusImg.getHeight());
+			}
+			shapeRenderer.rect(sugar.getBounds().x, sugar.getBounds().y, sugarImg.getWidth(), sugarImg.getHeight());
+		}
+		shapeRenderer.end();
 	}
 
 	@Override

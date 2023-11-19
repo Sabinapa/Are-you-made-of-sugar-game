@@ -25,8 +25,8 @@ public class IceCream extends DynamicGameObject implements Pool.Poolable{
         iceCreamTexture = texture;
 
         bounds = new Rectangle(0, 0, iceCreamTexture.getWidth(), iceCreamTexture.getHeight());
-    }
 
+    }
     public static float getIceCreamSpawnTime() {
         return iceCreamSpawnTime;
     }
@@ -68,5 +68,9 @@ public class IceCream extends DynamicGameObject implements Pool.Poolable{
     public void update(float delta)
     {
         bounds.y -= SPEED * delta;
+    }
+
+    public Rectangle getBounds() {
+        return bounds;
     }
 }
