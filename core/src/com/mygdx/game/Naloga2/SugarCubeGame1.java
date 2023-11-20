@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.util.ViewportUtils;
 import com.mygdx.game.util.debug.DebugCameraController;
 import com.mygdx.game.util.debug.MemoryInfo;
+import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.Iterator;
 
@@ -256,6 +257,8 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	@Override
 	public void render ()
 	{
+		ScreenUtils.clear(0, 0.5f, 0.5f, 1);
+
 		if (!isPaused && sugar.getHealth() > 0)
 		{
 			sugar.handleInput(bulletPool, bullets);

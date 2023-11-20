@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -82,6 +83,13 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 	public void create () {
 		batch = new SpriteBatch();
 
+		camera = new OrthographicCamera();
+		viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
+
+		//camera.setToOrtho(false, WORLD_WIDTH, WORLD_HEIGHT);
+		camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2, 0);
+		camera.update();
+
 		sugarImg = new Texture("assets/SugarGame/images/sugar-cube.png");
 		waterImg = new Texture("assets/SugarGame/images/waterDrop1.png");
 		background = new Texture("assets/SugarGame/images/backgroundClouds.png");
@@ -94,7 +102,6 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 
 		font = new BitmapFont(Gdx.files.internal("assets/SugarGame/fonts/arial-32.fnt"));
 
-		viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT);
 
 		sugar = new Rectangle();
 		sugar.x = (int) (Gdx.graphics.getWidth() / 2f - sugarImg.getWidth() / 2f);
@@ -114,17 +121,12 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 
 		hitObjects = 0;
 
-		viewport.apply();
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, WORLD_WIDTH, WORLD_HEIGHT);
-		camera.position.set(WORLD_WIDTH/2, WORLD_HEIGHT/2, 0);
-		camera.update();
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		viewport.update(width, height, true);
-		camera.position.set(WORLD_WIDTH/2, WORLD_HEIGHT/2, 0);
+		camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2, 0);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 
@@ -132,6 +134,8 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 
 	@Override
 	public void render () {
+
+		ScreenUtils.clear(1, 0, 1, 0.2f);
 
 		if (health > 0)
 		{
@@ -208,6 +212,7 @@ public class SugarCubeGameUnits extends ApplicationAdapter {
 
 	private void draw()
 	{
+		batch.setProjectionMatrix(camera.combined);
 		batch.draw(background, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
 
 		if (health <= 0) {
