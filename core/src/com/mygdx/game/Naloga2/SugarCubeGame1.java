@@ -232,7 +232,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 			if (bonus.bounds.y + bonusImg.getHeight() < 0) {
 				it.remove();
-				bonus.reset();
+				//bonus.reset();
 				bonusPool.free(bonus);
 			}
 			if (bonus.bounds.overlaps(sugar.getBounds())) {
@@ -257,7 +257,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	@Override
 	public void render ()
 	{
-		ScreenUtils.clear(0, 0.5f, 0.5f, 1);
+		ScreenUtils.clear(0, 0.5f, 0.5f, 0.1f);
 
 		if (!isPaused && sugar.getHealth() > 0)
 		{
@@ -271,7 +271,8 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 		}
 
-		if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+		if (Gdx.input.isKeyJustPressed(Input.Keys.P))
+		{
 			isPaused = !isPaused; // Preklopi med pavzo in nadaljevanjem igre ob pritisku na tipko P
 		}
 
