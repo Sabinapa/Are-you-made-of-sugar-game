@@ -67,9 +67,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	private ParticleEffect fireWorkEffect;
 
-
-
-
+	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -152,13 +150,8 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 			if (iceCream.bounds.y + iceCreamImg.getHeight() < 0)
 			{
-				System.out.println("IceCream array size before removal: " + iceCreams.size);
-
 				it.remove();
 				iceCreamPool.free(iceCream);
-
-				System.out.println("IceCream array size after removal: " + iceCreams.size);
-				//iceCream.reset();
 			}
 
 			if (iceCream.bounds.overlaps(sugar.getBounds())) {
@@ -173,7 +166,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				}
 
 				it.remove();
-				//iceCream.reset();
 				iceCreamPool.free(iceCream);
 			}
 		}
@@ -185,7 +177,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 			if (water.bounds.y + waterImg.getHeight() < 0) {
 				it.remove();
-				//water.reset();
 				waterDropPool.free(water);
 			}
 			if (water.bounds.overlaps(sugar.getBounds())) {
@@ -194,7 +185,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 					System.out.println("CurrentHealth: " + sugar.getHealth());
 					Assets.waterDropVoice.play();
 					it.remove();
-					//water.reset();
 					waterDropPool.free(water);
 				}
 
@@ -219,7 +209,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			if (bullet.bounds.y + bulletImg.getHeight() > Gdx.graphics.getHeight()) {
 				bulletsit.remove();
 				bulletPool.free(bullet);
-				//bullet.reset();
 			}
 		}
 
@@ -232,7 +221,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 			if (bonus.bounds.y + bonusImg.getHeight() < 0) {
 				it.remove();
-				//bonus.reset();
 				bonusPool.free(bonus);
 			}
 			if (bonus.bounds.overlaps(sugar.getBounds())) {
@@ -242,7 +230,6 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 				sugar.isInvulnerable = true;
 				sugar.invulnerabilityStartTime = TimeUtils.millis();
 				it.remove();
-				//bonus.reset();
 				bonusPool.free(bonus);
 
 			}
