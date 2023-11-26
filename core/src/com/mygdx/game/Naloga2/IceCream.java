@@ -3,6 +3,7 @@ package com.mygdx.game.Naloga2;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
@@ -16,15 +17,15 @@ public class IceCream extends DynamicGameObject implements Pool.Poolable{
     private static float iceCreamSpawnTime;
     private static int iceCreamsCollected;
 
-    private Texture iceCreamTexture;
+    private TextureAtlas.AtlasRegion iceCreamTexture;
 
     public Rectangle bounds;
 
-    public IceCream(Texture texture) {
-        super(texture, 0, 0, texture.getWidth(), texture.getHeight());
+    public IceCream(TextureAtlas.AtlasRegion texture) {
+        super(texture.getTexture(), 0, 0, texture.getRegionWidth(), texture.getRegionHeight());
         iceCreamTexture = texture;
 
-        bounds = new Rectangle(0, 0, iceCreamTexture.getWidth(), iceCreamTexture.getHeight());
+        bounds = new Rectangle(0, 0, iceCreamTexture.getRegionWidth(), iceCreamTexture.getRegionHeight());
 
     }
     public static float getIceCreamSpawnTime() {

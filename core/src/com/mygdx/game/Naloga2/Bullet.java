@@ -1,9 +1,8 @@
 package com.mygdx.game.Naloga2;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
@@ -12,16 +11,16 @@ public class Bullet extends DynamicGameObject  implements Pool.Poolable{
     private static int hitObjects;
     private static final float SPEED = 100f;
 
-    private Texture BulletTexture;
+    private TextureAtlas.AtlasRegion BulletTexture;
 
     public Rectangle bounds;
 
-    public Bullet(Texture texture) {
-        super(texture, 0, 0, texture.getWidth(), texture.getHeight());
+    public Bullet(TextureAtlas.AtlasRegion texture) {
+        super(texture.getTexture(), 0, 0, texture.getRegionWidth(), texture.getRegionHeight());
 
         BulletTexture = texture;
 
-        bounds = new Rectangle(0, 0, BulletTexture.getWidth(), BulletTexture.getHeight());
+        bounds = new Rectangle(0, 0, BulletTexture.getRegionWidth(), BulletTexture.getRegionHeight());
     }
 
     public Rectangle getBounds() {
@@ -56,6 +55,6 @@ public class Bullet extends DynamicGameObject  implements Pool.Poolable{
     }
 
     public void reset() {
-        bounds.set(0, 0, BulletTexture.getWidth(), BulletTexture.getHeight());
+        bounds.set(0, 0, BulletTexture.getRegionWidth(), BulletTexture.getRegionHeight());
     }
 }

@@ -1,13 +1,13 @@
 package com.mygdx.game.Naloga2;
 
-import static com.mygdx.game.Naloga2.Assets.bulletImg;
 import static com.mygdx.game.Naloga2.Assets.font;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
@@ -22,15 +22,15 @@ public class SugarCube extends DynamicGameObject
     public long invulnerabilityStartTime = 0; // Čas začetka neobčutljivosti
 
     private int health;
-    private Texture sugarTexture;
+    private TextureAtlas.AtlasRegion sugarTexture;
 
     private Rectangle bounds;
 
     private float widthT, heightT;
 
 
-    public SugarCube(Texture texture, float x, float y, float width, float height) {
-        super(texture, x, y, width, height);
+    public SugarCube(TextureAtlas.AtlasRegion texture, float x, float y, float width, float height) {
+        super(texture.getTexture(), x, y, width, height);
         sugarTexture = texture;
         widthT = width;
         heightT = height;
@@ -86,13 +86,13 @@ public class SugarCube extends DynamicGameObject
 
     }
 
-    public void handleInput(Pool<Bullet> bulletPool, Array<Bullet> bullets) {
+    public void handleInput(Pool<Bullet> bulletPool, Array<Bullet> bullets, Sound laserGunVoice) {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) moveLeft(Gdx.graphics.getDeltaTime());
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) moveRight(Gdx.graphics.getDeltaTime());
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             Bullet.shoot(bounds, bullets, bulletPool);
-            Assets.LaserGun.play();
+            laserGunVoice.play();
         }
 
     }

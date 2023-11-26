@@ -1,5 +1,6 @@
 package com.mygdx.game.Naloga2;
 
+import static com.mygdx.game.Naloga2.Assets.LaserGun;
 import static com.mygdx.game.Naloga2.Assets.bonusImg;
 import static com.mygdx.game.Naloga2.Assets.bulletImg;
 import static com.mygdx.game.Naloga2.Assets.font;
@@ -10,11 +11,15 @@ import static com.mygdx.game.Naloga2.Assets.waterImg;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
@@ -22,6 +27,7 @@ import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.assets.AssetDescriptors;
 import com.mygdx.game.util.ViewportUtils;
 import com.mygdx.game.util.debug.DebugCameraController;
 import com.mygdx.game.util.debug.MemoryInfo;
@@ -63,15 +69,50 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 	private DebugCameraController debugCameraController;
 	private MemoryInfo memoryInfo;
 
+	private BitmapFont font;
+	private TextureAtlas.AtlasRegion backgroundRegion;
+	private TextureAtlas.AtlasRegion sugarCubeRegion;
+	private TextureAtlas.AtlasRegion iceCreamRegion;
+	private TextureAtlas.AtlasRegion waterDropRegion;
+	private TextureAtlas.AtlasRegion bulletRegion;
+	private TextureAtlas.AtlasRegion bonusRegion;
+
+	private Sound IceCreamCollect;
+	private Sound waterDropVoice;
+
+	private Sound laserGunVoice;
+	private ParticleEffect fireWorkEffect;
 	private ParticleEffect starEffect;
 
-	private ParticleEffect fireWorkEffect;
 
-	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		Assets.load();
+
+		AssetManager assetManager = new AssetManager();
+		assetManager.load(AssetDescriptors.FONT);
+		assetManager.load(AssetDescriptors.GAMEPLAY);
+		assetManager.load(AssetDescriptors.ICECREAM_COLLECT);
+		assetManager.load(AssetDescriptors.LASERGUN);
+		assetManager.load(AssetDescriptors.WATERDROP_VOICE);
+		assetManager.load(AssetDescriptors.FIREWORK);
+		assetManager.load(AssetDescriptors.STAR);
+		assetManager.finishLoading();
+
+		font = assetManager.get(AssetDescriptors.FONT); // Retrieve the font
+		TextureAtlas gameplayAtlas = assetManager.get(AssetDescriptors.GAMEPLAY); // Retrieve the atlas
+		backgroundRegion = gameplayAtlas.findRegion("backgroundClouds");
+		sugarCubeRegion = gameplayAtlas.findRegion("sugar-cube");
+		iceCreamRegion = gameplayAtlas.findRegion("iceCream");
+		waterDropRegion = gameplayAtlas.findRegion("waterDrop1");
+		bulletRegion = gameplayAtlas.findRegion("bullet");
+		bonusRegion = gameplayAtlas.findRegion("bonus1");
+		laserGunVoice = assetManager.get(AssetDescriptors.LASERGUN);
+		IceCreamCollect = assetManager.get(AssetDescriptors.ICECREAM_COLLECT);
+		waterDropVoice = assetManager.get(AssetDescriptors.WATERDROP_VOICE);
+		fireWorkEffect = assetManager.get(AssetDescriptors.FIREWORK);
+		starEffect = assetManager.get(AssetDescriptors.STAR);
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -88,18 +129,18 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		bulletPool = new Pool<Bullet>() {
 			@Override
 			protected Bullet newObject() {
-				return new Bullet(bulletImg);
+				return new Bullet(bulletRegion);
 			}
 		};
 
-		sugar = new SugarCube(sugarImg, 0, 0, sugarImg.getWidth(), sugarImg.getHeight());
+		sugar = new SugarCube(sugarCubeRegion, 0, 0, sugarCubeRegion.getRegionWidth(), sugarCubeRegion.getRegionHeight());
 		sugar.initializeSugarPosition();
 
 		iceCreams = new Array<>();
 		iceCreamPool = new Pool<IceCream>() {
 			@Override
 			protected IceCream newObject() {
-				IceCream iceCream = new IceCream(iceCreamImg);
+				IceCream iceCream = new IceCream(iceCreamRegion);
 				Gdx.app.log("IceCreamPool", "Created new ice cream: " + iceCream);
 				return iceCream;
 			}
@@ -109,7 +150,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		waterDropPool = new Pool<WaterDrop>() {
 			@Override
 			protected WaterDrop newObject() {
-				return new WaterDrop(waterImg);
+				return new WaterDrop(waterDropRegion);
 			}
 		};
 
@@ -117,16 +158,9 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		bonusPool = new Pool<Bonus>() {
 			@Override
 			protected Bonus newObject() {
-				return new Bonus(bonusImg);
+				return new Bonus(bonusRegion);
 			}
 		};
-
-		// Load particle effect
-		starEffect = new ParticleEffect();
-		starEffect.load(Gdx.files.internal("assets/SugarGame/particles/star.pe"), Gdx.files.internal("assets/SugarGame/particles"));
-
-		fireWorkEffect = new ParticleEffect();
-		fireWorkEffect.load(Gdx.files.internal("assets/SugarGame/particles/firework.pe"), Gdx.files.internal("assets/SugarGame/particles"));
 
 	}
 
@@ -148,7 +182,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			IceCream iceCream = it.next();
 			iceCream.update(delta);
 
-			if (iceCream.bounds.y + iceCreamImg.getHeight() < 0)
+			if (iceCream.bounds.y + iceCreamRegion.getRegionHeight() < 0)
 			{
 				it.remove();
 				iceCreamPool.free(iceCream);
@@ -164,9 +198,10 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 					fireWorkEffect.setPosition(sugar.getBounds().x + sugar.getBounds().width / 2, sugar.getBounds().y + sugar.getBounds().height / 2);
 					fireWorkEffect.start();
 				}
-
+				System.out.println("IceCream array size before removal: " + iceCreams.size);
 				it.remove();
 				iceCreamPool.free(iceCream);
+				System.out.println("IceCream array size after removal: " + iceCreams.size);
 			}
 		}
 
@@ -175,7 +210,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 			WaterDrop water = it.next();
 			water.update(delta);
 
-			if (water.bounds.y + waterImg.getHeight() < 0) {
+			if (water.bounds.y + waterDropRegion.getRegionHeight() < 0) {
 				it.remove();
 				waterDropPool.free(water);
 			}
@@ -206,7 +241,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 					}
 				}
 
-			if (bullet.bounds.y + bulletImg.getHeight() > Gdx.graphics.getHeight()) {
+			if (bullet.bounds.y + bulletRegion.getRegionHeight() > Gdx.graphics.getHeight()) {
 				bulletsit.remove();
 				bulletPool.free(bullet);
 			}
@@ -219,13 +254,13 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 			bonus.updateStarEffectPosition(bonus.bounds.x, bonus.bounds.y);
 
-			if (bonus.bounds.y + bonusImg.getHeight() < 0) {
+			if (bonus.bounds.y + bonusRegion.getRegionHeight() < 0) {
 				it.remove();
 				bonusPool.free(bonus);
 			}
 			if (bonus.bounds.overlaps(sugar.getBounds())) {
 				Bonus.setBonusCollected(Bonus.getBonusCollected() + 1);
-				Assets.IceCreamCollect.play();
+				IceCreamCollect.play();
 				System.out.println("Bonus collected: " + Bonus.getBonusCollected());
 				sugar.isInvulnerable = true;
 				sugar.invulnerabilityStartTime = TimeUtils.millis();
@@ -248,7 +283,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 		if (!isPaused && sugar.getHealth() > 0)
 		{
-			sugar.handleInput(bulletPool, bullets);
+			sugar.handleInput(bulletPool, bullets, laserGunVoice);
 			update(Gdx.graphics.getDeltaTime());
 		}
 
@@ -326,7 +361,7 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 
 	private void draw()
 	{
-		batch.draw(Assets.background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		batch.draw(backgroundRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		if (isGameOver)
 		{
@@ -396,14 +431,14 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		debugCameraController.applyTo(camera);
 		batch.begin();
 		{
-			GlyphLayout layout = new GlyphLayout(Assets.font, "FPS:" + Gdx.graphics.getFramesPerSecond());
-			Assets.font.setColor(Color.YELLOW);
-			Assets.font.draw(batch, layout, Gdx.graphics.getWidth() - layout.width, Gdx.graphics.getHeight() - 50);
+			GlyphLayout layout = new GlyphLayout(font, "FPS:" + Gdx.graphics.getFramesPerSecond());
+			font.setColor(Color.YELLOW);
+			font.draw(batch, layout, Gdx.graphics.getWidth() - layout.width, Gdx.graphics.getHeight() - 50);
 
-			Assets.font.setColor(Color.YELLOW);
-			Assets.font.draw(batch, "RC:" + batch.totalRenderCalls, Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() - 20);
+			font.setColor(Color.YELLOW);
+			font.draw(batch, "RC:" + batch.totalRenderCalls, Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() - 20);
 
-			memoryInfo.render(batch, Assets.font);
+			memoryInfo.render(batch, font);
 		}
 		batch.end();
 
@@ -415,18 +450,18 @@ public class SugarCubeGame1 extends ApplicationAdapter {
 		{
 			shapeRenderer.setColor(1, 0, 0, 1);
 			for (IceCream icecream : iceCreams) {
-				shapeRenderer.rect(icecream.bounds.x, icecream.bounds.y, iceCreamImg.getWidth(), iceCreamImg.getHeight());
+				shapeRenderer.rect(icecream.bounds.x, icecream.bounds.y, iceCreamRegion.getRegionWidth(), iceCreamRegion.getRegionHeight());
 			}
 			for (WaterDrop waterDrop : waterDrops) {
-				shapeRenderer.rect(waterDrop.bounds.x, waterDrop.bounds.y, waterImg.getWidth(), waterImg.getHeight());
+				shapeRenderer.rect(waterDrop.bounds.x, waterDrop.bounds.y, waterDropRegion.getRegionWidth(), waterDropRegion.getRegionHeight());
 			}
 			for (Bullet bullet : bullets) {
-				shapeRenderer.rect(bullet.bounds.x, bullet.bounds.y, Assets.bulletImg.getWidth(), Assets.bulletImg.getHeight());
+				shapeRenderer.rect(bullet.bounds.x, bullet.bounds.y, bulletRegion.getRegionWidth(),bulletRegion.getRegionHeight());
 			}
 			for (Bonus bonus : bonuses) {
-				shapeRenderer.rect(bonus.bounds.x, bonus.bounds.y, bonusImg.getWidth(), bonusImg.getHeight());
+				shapeRenderer.rect(bonus.bounds.x, bonus.bounds.y, bonusRegion.getRegionWidth(), bonusRegion.getRegionHeight());
 			}
-			shapeRenderer.rect(sugar.getBounds().x, sugar.getBounds().y, sugarImg.getWidth(), sugarImg.getHeight());
+			shapeRenderer.rect(sugar.getBounds().x, sugar.getBounds().y, sugarCubeRegion.getRegionWidth(), sugarCubeRegion.getRegionHeight());
 		}
 		shapeRenderer.end();
 	}

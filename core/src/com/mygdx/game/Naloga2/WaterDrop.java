@@ -3,13 +3,12 @@ package com.mygdx.game.Naloga2;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
-
-import java.util.Iterator;
 
 public class WaterDrop extends DynamicGameObject  implements Pool.Poolable{
 
@@ -19,15 +18,15 @@ public class WaterDrop extends DynamicGameObject  implements Pool.Poolable{
 
     private static float waterSpawnTime;
 
-    private Texture waterDropTexture;
+    private TextureAtlas.AtlasRegion waterDropTexture;
     public Rectangle bounds;
 
 
-    public WaterDrop(Texture texture) {
-        super(texture, 0, 0, texture.getWidth(), texture.getHeight());
+    public WaterDrop(TextureAtlas.AtlasRegion texture) {
+        super(texture.getTexture(), 0, 0, texture.getRegionWidth(), texture.getRegionHeight());
         waterDropTexture = texture;
 
-        bounds = new Rectangle(0, 0, waterDropTexture.getWidth(), waterDropTexture.getHeight());
+        bounds = new Rectangle(0, 0, waterDropTexture.getRegionWidth(), waterDropTexture.getRegionHeight());
     }
 
     public static float getWaterSpawnTime() {

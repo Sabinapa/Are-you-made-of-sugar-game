@@ -1,0 +1,48 @@
+
+gameplay.png
+size: 1024, 512
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+backgroundClouds
+  rotate: false
+  xy: 2, 148
+  size: 576, 324
+  orig: 576, 324
+  offset: 0, 0
+  index: -1
+bonus1
+  rotate: false
+  xy: 2, 2
+  size: 25, 62
+  orig: 25, 62
+  offset: 0, 0
+  index: -1
+bullet
+  rotate: false
+  xy: 580, 370
+  size: 23, 40
+  orig: 23, 40
+  offset: 0, 0
+  index: -1
+iceCream
+  rotate: false
+  xy: 84, 96
+  size: 33, 50
+  orig: 33, 50
+  offset: 0, 0
+  index: -1
+sugar-cube
+  rotate: false
+  xy: 2, 66
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+waterDrop1
+  rotate: false
+  xy: 580, 412
+  size: 35, 60
+  orig: 35, 60
+  offset: 0, 0
+  index: -1

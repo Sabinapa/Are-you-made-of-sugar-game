@@ -1,18 +1,14 @@
 package com.mygdx.game.Naloga2;
 
-import static com.mygdx.game.Naloga2.Assets.font;
-
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
-
-import java.util.Iterator;
 
 public class Bonus extends DynamicGameObject  implements Pool.Poolable
 {
@@ -22,7 +18,7 @@ public class Bonus extends DynamicGameObject  implements Pool.Poolable
 
     public static int BonusCollected;
 
-    private Texture bonusTexture;
+    private TextureAtlas.AtlasRegion bonusTexture;
 
     public Rectangle bounds;
 
@@ -30,11 +26,11 @@ public class Bonus extends DynamicGameObject  implements Pool.Poolable
     public float starEffectY;
 
 
-    public Bonus(Texture texture) {
-        super(texture, 0, 0, texture.getWidth(), texture.getHeight());
+    public Bonus(TextureAtlas.AtlasRegion texture) {
+        super(texture.getTexture(), 0, 0, texture.getRegionWidth(), texture.getRegionHeight());
         bonusTexture = texture;
 
-        bounds = new Rectangle(0, 0, bonusTexture.getWidth(), bonusTexture.getHeight());
+        bounds = new Rectangle(0, 0, bonusTexture.getRegionWidth(), bonusTexture.getRegionHeight());
     }
 
     public void updateStarEffectPosition(float x, float y) {
